@@ -1,0 +1,372 @@
+:root {
+    --primary-color: rgb(101 165 108);
+    --primary-color-lighter: rgb(142, 173, 146);
+    --primary-color-darker: rgb(78, 126, 84);
+
+    --error-color: hwb(0deg 30% 17%);
+    --error-color-darker: hwb(0deg 20% 27%);
+}
+
+html,
+body {
+
+    background-color: #555;
+    color: white;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    font-family: 'Roboto', sans-serif;
+}
+
+html { box-sizing: border-box; height: 100%; } 
+
+*, *::before, *::after { box-sizing: inherit; }
+
+
+/* scrollbar
+      src: https://dev.to/xtrp/how-to-create-a-beautiful-custom-scrollbar-for-your-site-in-plain-css-1mjg
+*/
+::-webkit-scrollbar {
+    width: 5px;
+    margin-left: 5px;
+  }
+  ::-webkit-scrollbar-track {
+    background-color: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background-color: var(--primary-color);
+    background-clip: content-box;
+  }
+
+.enterPage {
+    width: 100%;
+    height: 100%;
+    justify-content: center;
+    align-items: center;
+
+    position: relative;
+
+
+}
+
+.enterPage::before {
+    content: "";
+    /* background-image: url(/node/9010/data/images/rooms/awesome-house.png); */ /* todo before deploy */
+    background-image: url(/data/images/rooms/awesome-house.png);
+    background-size: cover;
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    bottom: 0px;
+    left: 0px;
+    opacity: 0.7;
+}
+
+@media screen and (max-width: 450px) {
+
+    .enterPage::before {
+        background-image: none;
+        opacity: 1;
+        background-color: white;
+
+    }
+}
+
+
+#loginPage {
+    display: flex;
+}
+
+#signUpPage {
+    display: none;
+}
+
+.enterContainer {
+    background-color: white;
+    width: 500px;
+    /*height: 500px;*/
+    border-radius: 15px;
+    max-height: 90vh;
+    max-width: 80vw;
+    padding: 40px 25px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    position: relative;
+    color:#000;
+}
+
+#loginContainer {
+    row-gap: 5px;
+}
+
+#loginContainer .logo {
+    margin: 15px;
+    margin-bottom: 25px;
+}
+
+#signupContainer {
+    row-gap: 5px;
+}
+
+.loginInputs {
+    width: 100%;
+    padding: 12px 20px;
+    margin: 8px 0;
+    display: inline-block;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+button.enterButton {
+    width: 50%;
+    background-color: var(--primary-color);
+    color: white;
+    padding: 14px 20px;
+    margin: 8px 0;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    align-self: center;
+    font-size: inherit;
+
+}
+
+button.enterButton:hover {
+    background-color: var(--primary-color-darker);
+}
+
+button.enterButton:disabled,
+button.enterButton:disabled:hover,
+button.enterButton[disabled]{
+  background-color: #dbdbdb;
+  color: #666666;
+  cursor: initial;
+}
+
+select:required:invalid {
+    color: #666;
+}
+
+option[value=""][disabled] {
+    display: none;
+}
+
+option {
+    color: #000;
+}
+
+.logo {
+    height: 100px;
+    width: 100px;
+    align-self: center;
+}
+
+.goTo{
+    text-align: center;
+    font-size: small;
+    color: #737373;
+}
+
+.hint{
+    text-align: center;
+    font-size: small;
+    color: rgb(216, 24, 24);
+    font-weight: 700;
+    visibility: hidden;
+}
+
+a.link{
+    cursor: pointer;
+}
+
+a.link:hover{
+    color:rgb(78, 126, 84);
+}
+
+canvas, #inputOverlay, #chatOverlay, #changeRoomOverlay {
+    display: none;
+}
+
+#chatOverlay {
+    max-height: calc(100vh - 80px);
+    width: 20vw;
+    display: flex;
+    position: absolute;
+    right: 0;
+    flex-direction: column;
+    gap: 10px;
+    padding: 10px;
+    overflow-y: auto;
+    mask-image: linear-gradient(0deg, transparent 0px, red 15px);
+    -webkit-mask-image: linear-gradient(0deg, transparent 0px, red 15px);
+}
+
+@media screen and (max-width: 1000px) {
+    #chatOverlay {
+        width: 30vw;
+    }
+}
+
+@media screen and (max-width: 800px) {
+    #chatOverlay {
+        width: 40vw;
+    }
+}
+  
+
+@media screen and (max-width: 500px) {
+    #chatOverlay {
+        width: 70vw;
+    }
+}
+  
+
+#chatOverlay .bubble {
+    padding: 10px;
+    border-radius: 5px;
+    align-self: flex-end;
+    opacity: 0.9;
+    word-break: break-all;
+
+    opacity: 1;
+    -webkit-transition: opacity 300ms ease-in;
+    transition: opacity 300ms ease-in;
+}
+
+#chatOverlay .bubble .username {
+    font-size: x-small;
+    font-weight: 700;
+    padding-bottom: 5px;
+}
+
+.showEmojis {
+    font-family: Color Emoji,Segoe UI Emoji,Noto Color Emoji,Android Emoji,EmojiSymbols,EmojiOne Mozilla,Twemoji Mozilla,Segoe UI Symbol,Noto Color Emoji Compat,emoji,noto-emojipedia-fallback;
+}
+
+
+#chatOverlay .bubble.me {
+    background-color: white;
+    color: #121212;
+}
+
+#chatOverlay .bubble.me .username {
+    display: none;
+}
+
+#chatOverlay .bubble.other {
+    background-color: #393939;
+    color: white;
+}
+
+#inputOverlay {
+    pointer-events: none;
+    position: absolute;
+    bottom: 0;
+    width: 100vw;
+    padding: 15px;
+    align-items: center;
+    flex-direction: column;
+}
+
+#inputOverlay .inputBar {
+    pointer-events: auto;
+    -webkit-border-radius: 20px;
+    -moz-border-radius: 20px;
+    border-radius: 20px;
+    border: 1px solid #9e9e9e;
+    color: #121212;
+    min-width: 500px;
+    height: 50px;
+    padding-left: 15px;
+    padding-right: 15px;
+    background-color: rgba(255,255,255, .7);
+    backdrop-filter: blur(10px);
+    font-size: initial;
+}
+
+@media screen and (max-width: 500px) {
+    #inputOverlay .inputBar {
+        min-width: 100%;
+    }
+}
+
+
+#changeRoomOverlay {
+    border-radius: 7px;
+    border: 1px solid #9e9e9e;
+    color: #121212;
+    padding: 20px;
+    padding-right: 50px;
+    background-color: rgba(255,255,255, .65);
+    backdrop-filter: blur(10px);
+    font-size: initial;
+    flex-direction: column;
+
+    margin: 20px;
+
+    position: absolute;
+    left: 0;
+    top: 0;
+}
+
+#changeRoomOverlay button {
+  border-radius: 8px;
+  border-style: none;
+  box-sizing: border-box;
+  color: #FFFFFF;
+  cursor: pointer;
+  display: inline-block;
+  font-family: "Haas Grot Text R Web", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  height: 40px;
+  line-height: 20px;
+  list-style: none;
+  margin: 0;
+  outline: none;
+  padding: 10px 16px;
+  position: relative;
+  text-align: center;
+  text-decoration: none;
+  transition: color 100ms;
+  vertical-align: baseline;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+}
+
+
+#changeRoomOverlay button.yes {
+    background-color: var(--primary-color);
+}
+
+#changeRoomOverlay button.yes:hover,
+#changeRoomOverlay button.yes:focus {
+  background-color: var(--primary-color-darker);
+}
+
+#changeRoomOverlay button.no {
+    background-color: var(--error-color);
+}
+
+#changeRoomOverlay button.no:hover,
+#changeRoomOverlay button.no:focus {
+  background-color: var(--error-color-darker);
+}
+
+#changeRoomOverlay .actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+}
+    
+#inputOverlay .inputBar:focus {
+     outline: none;
+}

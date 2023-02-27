@@ -132,19 +132,12 @@ function init()
 		{
 			//compute collision with floor plane
 			var ray = camera.getRay(e.canvasx, e.canvasy);
-
-			/*
-			var coll = vec3.create();
-			var node =  
-			var 
-			*/
-
 			if( ray.testPlane( RD.ZERO, RD.UP ) ) //collision
 			{
 				console.log( "floor position clicked", ray.collision_point );
 
 				/*
-				// rotate but not move:
+				
 				girl_pivot.ortientTo(ray.collision_point, [0,1,0])
 				girl_pivot.lookAt(ray.collision_point, [0,1,0])
 				
