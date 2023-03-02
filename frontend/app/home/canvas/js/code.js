@@ -6,6 +6,8 @@ var character = null;
 var animations = {};
 var animation = null;
 
+var walkarea = null;
+
 function init()
 {
 	//create the rendering context
@@ -29,6 +31,10 @@ function init()
 
 	//global settings
 	var bg_color = [0.1,0.1,0.1,1];
+	var avatar = "girl";
+	var avatar_scale = 0.3;
+	//var avatar = "tiger";
+	//var avatar_scale = 1.5;
 
 	//create material for the girl
 	var mat = new RD.Material({
@@ -44,13 +50,28 @@ function init()
 
 	//create a mesh for the girl
 	var girl = new RD.SceneNode({
-		scaling: 0.3,
-		mesh: "girl/girl.wbin",
+		scaling: avatar_scale,
+		mesh: avatar + "/" + avatar +".wbin",
 		material: "girl"
 	});
 	girl_pivot.addChild(girl);
 	girl.skeleton = new RD.Skeleton();
 	scene.root.addChild( girl_pivot );
+
+	var girl_selector = new RD.SceneNode({
+		position: [0,20,0],
+		mesh: "cube",
+		material: "girl",
+		scaling: [8,20,8],
+		name: "girl_selector",
+		layers: 0b1000
+	});
+	girl_pivot.addChild( girl_selector );
+
+	walkarea = new WalkArea();
+	walkarea.addRect([-50,0,-30],80,50);
+	walkarea.addRect([-90,0,-10],80,20);
+	walkarea.addRect([-110,0,-30],40,50);
 
 
 	character = girl;
@@ -62,14 +83,17 @@ function init()
 		anim.load(url);
 		return anim;
 	}
-	loadAnimation("idle","data/girl/idle.skanim");
-	loadAnimation("walking","data/girl/walking.skanim");
-	loadAnimation("dance","data/girl/dance.skanim");
+	loadAnimation("idle","data/"+avatar+"/idle.skanim");
+	loadAnimation("walking","data/"+avatar+"/walking.skanim");
+	//loadAnimation("dance","data/girl/dance.skanim");
 
 	//load a GLTF for the room
-	var room = new RD.SceneNode({scaling:40});
+	var room = new RD.SceneNode({scaling:40,position:[0,-.01,0]});
 	room.loadGLTF("data/room.gltf");
 	scene.root.addChild( room );
+
+	var gizmo = new RD.Gizmo();
+	gizmo.mode = RD.Gizmo.ALL;
 
 	// main loop ***********************
 
@@ -79,15 +103,24 @@ function init()
 		gl.canvas.height = document.body.offsetHeight;
 		gl.viewport(0,0,gl.canvas.width,gl.canvas.height);
 
-		/* 
-		the camera should look at the carachter
-		camera.lookAt(camera.position, characjter_pivot.position, [0])
-		
-		*/
+		var girlpos = girl_pivot.localToGlobal([0,40,0]);
+		//var campos = girl_pivot.localToGlobal([0,50,0]);
+		var camtarget = girl_pivot.localToGlobal([0,50,70]);
+		var smoothtarget = vec3.lerp( vec3.create(), camera.target, camtarget, 0.02 );
+
+		camera.perspective( 60, gl.canvas.width / gl.canvas.height, 0.1, 1000 );
+		camera.lookAt( camera.position, girlpos, [0,1,0] );
+
 		//clear
 		renderer.clear(bg_color);
 		//render scene
-		renderer.render(scene, camera);
+		renderer.render(scene, camera, null, 0b11 );
+
+		var vertices = walkarea.getVertices();
+		renderer.renderPoints( vertices, null, camera, null,null,null,gl.LINES );
+
+		//gizmo.setTargets([monkey]);
+		//renderer.render( scene, camera, [gizmo] ); //render gizmo on top
 	}
 
 	//main update
@@ -103,19 +136,23 @@ function init()
 		//control with keys
 		if(gl.keys["UP"])
 		{
-			character.moveLocal([0,0,1]);
+			girl_pivot.moveLocal([0,0,1]);
 			anim = animations.walking;
 		}
 		else if(gl.keys["DOWN"])
 		{
-			character.moveLocal([0,0,-1]);
+			girl_pivot.moveLocal([0,0,-1]);
 			anim = animations.walking;
 			time_factor = -1;
 		}
 		if(gl.keys["LEFT"])
-			character.rotate(90*DEG2RAD*dt,[0,1,0]);
+			girl_pivot.rotate(90*DEG2RAD*dt,[0,1,0]);
 		else if(gl.keys["RIGHT"])
-			character.rotate(-90*DEG2RAD*dt,[0,1,0]);
+			girl_pivot.rotate(-90*DEG2RAD*dt,[0,1,0]);
+
+		var pos = girl_pivot.position;
+		var nearest_pos = walkarea.adjustPosition( pos );
+		girl_pivot.position = nearest_pos;
 
 		//move bones in the skeleton based on animation
 		anim.assignTime( t * 0.001 * time_factor );
@@ -125,24 +162,26 @@ function init()
 
 	//user input ***********************
 
+	context.onmouse = function(e)
+	{
+		//gizmo.onMouse(e);
+	}
+
 	//detect clicks
 	context.onmouseup = function(e)
 	{
 		if(e.click_time < 200) //fast click
 		{
-			//compute collision with floor plane
+			//compute collision with scene
 			var ray = camera.getRay(e.canvasx, e.canvasy);
-			if( ray.testPlane( RD.ZERO, RD.UP ) ) //collision
+			var node = scene.testRay( ray, null, 10000, 0b1000 );
+			console.log(node);
+			/*
+			if( ray.testPlane( RD.ZERO, RD.UP ) ) //collision with infinite plane
 			{
 				console.log( "floor position clicked", ray.collision_point );
-
-				/*
-				
-				girl_pivot.ortientTo(ray.collision_point, [0,1,0])
-				girl_pivot.lookAt(ray.collision_point, [0,1,0])
-				
-				*/
 			}
+			*/
 		}
 	}
 
@@ -154,6 +193,8 @@ function init()
 			//camera.orbit( e.deltax * -0.01, RD.UP );
 			//camera.position = vec3.scaleAndAdd( camera.position, camera.position, RD.UP, e.deltay );
 			camera.move([-e.deltax*0.1, e.deltay*0.1,0]);
+			//girl_pivot.rotate(e.deltax*-0.003,[0,1,0]);
+
 		}
 	}
 
@@ -172,10 +213,4 @@ function init()
 
 }
 
-/* example of computing movement vector
-	var delta = vec3.sub( vec3.create(), target, sprite.position );
-	vec3.normalize(delta,delta);
-	vec3.scaleAndAdd( sprite.position, sprite.position, delta, dt * 50 );
-	sprite.updateMatrices();
-	sprite.flags.flipX = delta[0] < 0;
-*/
+

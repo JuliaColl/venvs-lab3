@@ -145,7 +145,7 @@ function init()
 
 				/*
 				// rotate but not move:
-				girl_pivot.ortientTo(ray.collision_point, [0,1,0])
+				girl_pivot.orientTo(ray.collision_point, [0,1,0])
 				girl_pivot.lookAt(ray.collision_point, [0,1,0])
 				
 				*/

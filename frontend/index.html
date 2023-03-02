@@ -3,9 +3,11 @@
 <head>
     <link rel="stylesheet" href="style.css" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" type="image/x-icon" href="/data/images/logo.png" >
+    <link rel="icon" type="image/x-icon" href="/data/images/logo.png">
     <!-- <link rel="icon" type="image/x-icon" href="/node/9010/data/images/logo.png" > --> <!-- todo deploy -->
     <title>AvocadoArmchair</title>
+
+
 </head>
 
 <body>
@@ -26,9 +28,9 @@
 
             <button class='enterButton' id="login" disabled> login </button>
 
-            
+
             <div class="goTo"> Don't have an account?
-                <a class='link' id="goToSignUp"> <u> Sign up </u></a>    
+                <a class='link' id="goToSignUp"> <u> Sign up </u></a>
             </div>
         </div>
 
@@ -49,7 +51,7 @@
                 <input type="password" id="inputValidationPasswordSignUp" class="loginInputs"
                     placeholder="confirm password">
             </div>
-            
+
             <select class="loginInputs" id="avatar" name="avatar" required>
                 <option value="" disabled selected>select an avatar</option>
                 <option value="0">avatar "Bob"</option>
@@ -57,18 +59,18 @@
                 <option value="2">avatar "Adam"</option>
                 <option value="3">avatar "Alex"</option>
 
-              </select>
+            </select>
 
-              <div class="hint signUp">The username or password is not valid.</div>
-            
-              
+            <div class="hint signUp">The username or password is not valid.</div>
+
+
             <button class='enterButton' id="signUp" disabled> sign up </button>
             <div class="goTo"> Already have an account?
-                <a class='link' id="goToLogin"> <u> Login </u></a>    
+                <a class='link' id="goToLogin"> <u> Login </u></a>
             </div>
         </div>
 
-        
+
 
     </div>
 
@@ -77,14 +79,14 @@
             Do you want to leave the room?
         </div>
         <div class="actions">
-            <button class="yes">Leave room</button> 
+            <button class="yes">Leave room</button>
             <button class="no">Dismiss</button>
         </div>
     </div>
 
     <div id="chatOverlay">
     </div>
-    
+
     <div id="inputOverlay">
         <input type="text" placeholder="say something to the room..." class="inputBar showEmojis" id="inputBar" />
     </div>
@@ -92,7 +94,11 @@
     <canvas id="canvas"></canvas>
 </body>
 
-
-<script src="index.js" type="module"  ></script>
+<script type="text/javascript" src="libs/gl-matrix-min.js"></script>
+<script type="text/javascript" src="libs/litegl.js"></script>
+<script type="text/javascript" src="libs/rendeer.js"></script>
+<script type="text/javascript" src="libs/wbin.js"></script>
+<script type="text/javascript" src="libs/walkArea.js"></script>
+<script src="index.js" type="module"></script>
 
 </html>
