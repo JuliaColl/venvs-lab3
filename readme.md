@@ -1,9 +1,9 @@
 # Dev set up
 1. Create a .env file
 ```
-PORT=9010
 DB_PORT=27017
-DB_URL=mongodb://localhost:27017/avocadoArmchair-lab2
+DB_URL=mongodb://localhost:27017/avocadoArmchair-lab3
+PORT=9011
 ```
 2. Create a .env.dev file
 ```
