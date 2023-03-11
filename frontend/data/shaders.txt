@@ -1,0 +1,396 @@
+\shaders
+
+phong basic.vs phong.fs
+phong_shadow basic.vs phong.fs {"USE_SHADOWMAP":""}
+phong_textured_shadow basic.vs phong.fs {"USE_SHADOWMAP":"","USE_COLOR_TEXTURE":""}
+nolight basic.vs phong.fs {"SKIP_LIGHT":""}
+nolight_shadow basic.vs phong.fs {"SKIP_LIGHT":"","USE_SHADOWMAP":""}
+nolight_textured_shadow basic.vs phong.fs {"SKIP_LIGHT":"","USE_SHADOWMAP":"","USE_COLOR_TEXTURE":""}
+normal basic.vs normal.fs
+uvs basic.vs uvs.fs
+ssao @SCREEN ssao.fs
+blend_ssao @SCREEN blend_ssao.fs
+edges @SCREEN edges.fs
+
+palette @SCREEN palette.fs
+
+\basic.vs 
+
+	precision highp float;
+	attribute vec3 a_vertex;
+	attribute vec3 a_normal;
+	attribute vec2 a_coord;
+
+	varying vec3 v_wPosition;
+	varying vec3 v_wNormal;
+	varying vec2 v_coord;
+
+	uniform mat4 u_viewprojection;
+	uniform mat4 u_model;
+	uniform mat4 u_normal_matrix;
+
+	void main() {
+		vec3 vertex = a_vertex;
+
+		v_wPosition = (u_model * vec4(vertex,1.0)).xyz;
+		v_wNormal = (u_normal_matrix * vec4(a_normal,0.0)).xyz;
+		v_coord = a_coord;
+
+		gl_Position = u_viewprojection * vec4( v_wPosition, 1.0 );
+		gl_PointSize = 2.0;
+	}
+
+
+\testShadowmap
+
+uniform mat4 u_shadowmap_matrix;
+uniform sampler2D u_shadowmap_texture;
+uniform float u_shadowbias;
+
+float testShadowmap( vec3 pos )
+{
+	vec4 proj = u_shadowmap_matrix * vec4(pos, 1.0);
+	vec2 sample = (proj.xy / proj.w) * vec2(0.5) + vec2(0.5);
+	if(sample.x >= 0.0 && sample.x <= 1.0 && sample.y >= 0.0 && sample.y <= 1.0 )
+	{
+		float depth = texture2D( u_shadowmap_texture, sample ).x;
+		//if( depth > 0.0 && depth < 1.0 && depth <= ( ((proj.z-u_shadowbias) / proj.w) * 0.5 + 0.5) )
+		if( depth > 0.0 && depth < 1.0 && (depth + u_shadowbias ) <= ( (proj.z / proj.w) * 0.5 + 0.5) )
+			return 0.0;
+	}
+	return 1.0;
+}
+
+
+\applyLight
+
+uniform vec3 u_ambient_light;
+uniform vec3 u_light_color;
+uniform vec3 u_light_vector;
+
+vec3 applyLight(vec3 worldpos, vec3 N, vec3 color)
+{
+	vec3 L = u_light_vector;
+
+	//compute light
+	float NdotL = max( dot( N, L ), 0.0 );
+	#ifdef SKIP_LIGHT
+		NdotL = floor(NdotL+0.5);
+	#endif
+
+	//ambient
+	vec3 light = u_ambient_light;// * (dot(N,vec3(0.0,1.0,0.0))*0.5+0.5);
+	#ifdef SKIP_LIGHT
+	#else
+		light += (dot(L,N) * 0.5 + 0.5) * u_ambient_light * 0.4 * length(u_light_color);
+	#endif
+	//light *= 0.5 + 0.5 * pow(clamp( worldpos.y * 0.2,0.0,1.0),0.3);
+
+	//direct
+	float shadow = 1.0;
+	#ifdef USE_SHADOWMAP
+		shadow = testShadowmap( worldpos );
+	#endif
+	//light += shadow * u_light_color * (dot(L,-N)*0.5+0.5)*0.5;
+	NdotL = pow(max(0.0,dot(L,-N)),0.9);
+	#ifdef SKIP_LIGHT
+		NdotL = ceil(NdotL);
+	#endif
+	light += shadow * u_light_color * NdotL;
+
+	return color * light;
+}
+
+
+\phong.fs
+
+precision highp float;
+
+varying vec3 v_wPosition;
+varying vec3 v_wNormal;
+varying vec2 v_coord;
+
+uniform vec3 u_camera_position;
+uniform vec4 u_background_color;
+
+uniform vec4 u_color;
+
+#ifdef USE_COLOR_TEXTURE
+	uniform sampler2D u_color_texture;
+#endif
+
+#ifdef USE_SHADOWMAP
+	#import "testShadowmap"
+#endif
+
+#import "applyLight"
+
+void main() {
+	
+	vec3 N = normalize( v_wNormal );
+
+	vec4 color = u_color;
+	#ifdef USE_COLOR_TEXTURE
+		color *= texture2D( u_color_texture, v_coord );
+	#endif
+	
+	vec4 final_color = vec4(0.0);
+	final_color.a = color.a;
+	final_color.xyz = applyLight( v_wPosition, N, color.xyz );
+
+	float dist = length( u_camera_position - v_wPosition);
+	float fog_factor = pow( clamp( 1.0 - (10.0 / dist),0.0,1.0), 2.0 );
+	final_color.xyz = mix( final_color.xyz, u_background_color.xyz, fog_factor );
+
+	gl_FragColor = vec4( final_color );
+}
+
+\palette.fs
+
+precision highp float;
+varying vec3 v_wPosition;
+varying vec3 v_wNormal;
+varying vec2 v_coord;
+
+uniform int u_linear;
+uniform float u_hue;
+
+vec3 hsv2rgb(vec3 c)
+{
+    vec4 K = vec4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
+    vec3 p = abs(fract(c.xxx + K.xyz) * 6.0 - K.www);
+    return c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);
+}
+
+void main() {
+	if(u_linear == 0)
+		gl_FragColor = vec4( hsv2rgb( vec3(v_coord.x,1.0,1.0 ) ), 1.0 );
+	else
+		gl_FragColor = vec4( hsv2rgb( vec3(u_hue, v_coord ) ), 1.0 );
+}
+
+\normal.fs
+
+precision highp float;
+varying vec3 v_wNormal;
+void main() {
+	vec3 N = normalize(v_wNormal);
+	gl_FragColor = vec4( N * 0.5 + vec3(0.5), 1.0 );
+}
+
+\uvs.fs
+
+precision highp float;
+varying vec2 v_coord;
+void main() {
+	gl_FragColor = vec4( v_coord, 0.0, 1.0 );
+}
+
+\blend_ssao.fs
+
+precision highp float;
+varying vec2 v_coord;
+uniform sampler2D u_color_texture;
+void main() {
+	gl_FragColor = vec4( 0.0, 0.0, 0.0, 1.0 - texture2D(u_color_texture,v_coord).x );
+}
+
+
+\ssao.fs
+
+#extension GL_EXT_shader_texture_lod : enable
+#extension GL_OES_standard_derivatives : enable
+
+precision highp float;
+uniform mat4 u_projection;
+uniform vec2 u_iresolution;
+uniform mat4 u_invvp;
+uniform mat4 u_view;
+uniform float u_near;
+uniform float u_far;
+
+uniform sampler2D u_color_texture;
+uniform sampler2D u_normal_texture;
+uniform sampler2D u_depth_texture;
+uniform sampler2D u_noise_texture;
+
+uniform vec3 u_samples[64];
+uniform float u_radius;
+uniform float u_bias;
+uniform float u_max_dist;
+uniform float u_min_dist;
+uniform float u_ao_power;
+uniform vec2 u_noise_scale;
+
+uniform int u_linear_depth;
+
+varying vec2 v_coord;
+
+float readDepth(sampler2D depthMap, vec2 coord) {
+	float z_b = texture2D(depthMap, coord).r;
+	float z_n = 2.0 * z_b - 1.0;
+	if(u_linear_depth == 1)
+		return z_b;
+	float z_e = 2.0 * u_near * u_far / (u_far + u_near - z_n * (u_far - u_near));
+	return z_e;
+}
+
+vec2 viewSpaceToScreenSpaceTexCoord(vec3 p) {
+	vec4 projectedPos = u_projection * vec4(p, 1.0);
+	vec2 ndcPos = projectedPos.xy / projectedPos.w; //normalized device coordinates
+	vec2 coord = ndcPos * 0.5 + 0.5;
+	return coord;
+}
+
+vec3 getPositionFromDepth(float depth, vec2 uvs) {
+
+	depth = depth * 2.0 - 1.0;
+	vec2 pos2D = uvs * 2.0 - vec2(1.0);
+	vec4 pos = vec4( pos2D, depth, 1.0 );
+	pos = u_invvp * pos;
+	pos.xyz = pos.xyz / pos.w;
+	return pos.xyz;
+}
+
+void main() {
+	
+	vec2 coord = gl_FragCoord.xy * u_iresolution;
+
+	// Texture Maps
+	vec4 colorMap = texture2D( u_color_texture, coord );
+	vec4 normalMap = texture2D( u_normal_texture, coord);
+	vec3 normal    = normalize(normalMap.xyz * 2. - vec3(1.));
+	
+	// Properties and depth
+	float depth = texture2D( u_depth_texture, coord ).x;
+
+	// Vectors
+	normal = (u_view * vec4(normal, 0.0) ).xyz;
+	vec3 position = getPositionFromDepth(depth, coord);
+	position =  (u_view * vec4(position, 1.0) ).xyz;
+	
+	/*
+	*	SSAO
+	*/
+
+	vec3 randomVec = texture2D(u_noise_texture, coord * u_noise_scale).xyz * 2.0 - vec3(1.0);
+	vec3 tangent   = normalize(randomVec - normal * dot(randomVec, normal));
+	vec3 bitangent = cross(normal, tangent);
+	mat3 TBN       = mat3(tangent, bitangent, normal);  
+
+	float radius = u_radius;
+	float bias = u_bias;
+	float occlusion = 0.0;
+
+	if(depth == 1.0) 
+	{
+		occlusion = 1.0;
+	}
+	else
+	{
+		for(int i = 0; i < 64; ++i)
+		{
+			// get sample position
+			vec3 sample = TBN * u_samples[i]; // From tangent to view-space
+			sample = position + sample * radius;
+			
+			// transform to screen space 
+			vec2 offset = viewSpaceToScreenSpaceTexCoord(sample);
+			float sampleDepth = readDepth(u_depth_texture, offset);
+
+			if( abs( (-sample.z) - sampleDepth ) > u_max_dist )
+			continue;
+
+			if( abs( (-sample.z) - sampleDepth ) < u_min_dist )
+			continue;
+
+			float rangeCheck =  smoothstep(0.0, 1.0, radius / abs((-sample.z) - sampleDepth));
+			occlusion += (sampleDepth <= -sample.z ? 1.0 : 0.0) * rangeCheck;
+		} 
+
+		occlusion *= u_ao_power;
+		occlusion = 1.0 - (occlusion / 64.0);
+	}
+
+	gl_FragColor = vec4(vec3(occlusion), 1.0);
+}
+
+\edges.fs
+
+#extension GL_EXT_shader_texture_lod : enable
+#extension GL_OES_standard_derivatives : enable
+
+precision highp float;
+uniform mat4 u_invvp;
+uniform vec2 u_iresolution;
+uniform float u_near;
+uniform float u_far;
+uniform float u_intensity;
+
+uniform sampler2D u_normal_texture;
+uniform sampler2D u_depth_texture;
+
+uniform float u_linear_depth;
+
+varying vec2 v_coord;
+
+float getDistanceFromDepth(vec2 uvs)
+{
+	float d = texture2D( u_depth_texture, uvs ).x;
+	if( u_linear_depth == 1.0 )
+		return d * (u_far - u_near) + u_near;
+	float z_n = 2.0 * d - 1.0;
+	return 2.0 * u_near * u_far / (u_far + u_near - z_n * (u_far - u_near));
+}
+
+float getEdge( float d, vec2 uvs, vec2 v)
+{
+	float A = getDistanceFromDepth( uvs + v );
+	float B = getDistanceFromDepth( uvs - v );
+	return abs((d - A) - (B - d));
+}
+
+vec3 getNormal(vec2 uvs)
+{
+	vec4 normalMap = texture2D( u_normal_texture, uvs);
+	return normalize(normalMap.xyz * 2. - vec3(1.));
+}
+
+float getNormalEdge( vec3 N, vec2 uvs, vec2 v)
+{
+	vec3 A = getNormal( uvs + v );
+	vec3 B = getNormal( uvs - v );
+	//return abs( (dot(N,A)*0.5+0.5) - (dot(B,N)*0.5+0.5) );
+	return 1.0 - (dot(B,A)*0.5+0.5);
+}
+
+void main() {
+	
+	vec2 coord = gl_FragCoord.xy * u_iresolution;
+
+	// Properties and depth
+	float dist = getDistanceFromDepth( coord );
+	vec3 N = getNormal( coord );
+
+	//neightbours
+	vec2 up = u_iresolution * vec2(0.0,1.0);
+	vec2 right = u_iresolution * vec2(1.0,0.0);
+
+	float edge = 0.0;
+	edge += getEdge( dist, coord, up );
+	edge += getEdge( dist, coord, right );
+	edge += getEdge( dist, coord, up + right );
+	edge += getEdge( dist, coord, right - up );
+
+	float normal = 0.0;
+	normal += getNormalEdge( N, coord, up );
+	normal += getNormalEdge( N, coord, right );
+	normal += getNormalEdge( N, coord, up + right );
+	normal += getNormalEdge( N, coord, right - up );
+
+	edge = max(edge,normal);
+	edge = 1.0 - smoothstep(0.1,0.2,edge) * u_intensity;
+
+	gl_FragColor = vec4(vec3(edge), 1.0);
+}
+

@@ -83,6 +83,8 @@ export class CanvasController {
         this._leaveRoomOverlayView.hide();
     }
 
+    useSsao = true;
+
     onLogin = ({ username, avatar }, token) => {
         this.myUser = new User(username, avatar);
 
@@ -130,6 +132,9 @@ export class CanvasController {
         this.renderer.setDataFolder("data");
         this.renderer.autoload_assets = true;
 
+        // set shader
+        this.renderer.loadShaders("shaders.txt");
+
         //attach canvas to DOM
         document.body.appendChild(this.renderer.canvas);
 
@@ -142,7 +147,7 @@ export class CanvasController {
         this.camera.lookAt([0, 40, 100], [0, 20, 0], [0, 1, 0]);
 
         //global settings
-        var bg_color = [0.1, 0.1, 0.1, 1];
+        var bg_color = [1, 1, 1, 1];
         var avatar = "girl";
         var avatar_scale = 0.3;
         //var avatar = "tiger";
@@ -202,10 +207,29 @@ export class CanvasController {
         //load a GLTF for the room
         var room = new RD.SceneNode({ scaling: 40, position: [0, -.01, 0] });
         room.loadGLTF("data/room.gltf");
-        this.scene.root.addChild(room);
+        //this.scene.root.addChild(room);
 
         var gizmo = new RD.Gizmo();
         gizmo.mode = RD.Gizmo.ALL;
+
+        // create floor
+        var floor = new RD.SceneNode({
+            position: [0,0,0],
+            scaling: 100,
+            color: [1,1,1,1],
+            mesh: "planeXZ",
+        });
+        this.scene.root.addChild( floor );
+
+
+        //create sphere
+        var box = new RD.SceneNode();
+        box.position = [0,10,0]
+        box.color = [1,0,0,1]
+        box.mesh = "cube";
+        //box.shader = "phong";
+        box.scale([10,10,10])
+        this.scene.root.addChild(box);
 
         // main loop ***********************
 
@@ -228,13 +252,62 @@ export class CanvasController {
             //render scene
             this.renderer.render(this.scene, this.camera, null, 0b11);
 
-            var vertices = this.walkarea.getVertices();
-            this.renderer.renderPoints(vertices, null, this.camera, null, null, null, gl.LINES);
+
+            /*var vertices = this.walkarea.getVertices();
+            this.renderer.renderPoints(vertices, null, this.camera, null, null, null, gl.LINES);*/
 
             //gizmo.setTargets([monkey]);
             //this.renderer.render( this.scene, this.camera, [gizmo] ); //render gizmo on top
+
+            // shader
+            if (this.useSsao){
+                var w = gl.canvas.width;
+                var h = gl.canvas.height;
+                if(!this.normaldepth_fbo || this.normalbuffer.width != w || this.normalbuffer.height != h )
+                {
+                    this.normalbuffer = new GL.Texture( w,h, { format: gl.RGB } );
+                    this.depthbuffer = new GL.Texture( w,h, { format: gl.DEPTH_COMPONENT, type: gl.UNSIGNED_SHORT } );
+                    this.normaldepth_fbo = new GL.FBO([this.normalbuffer], this.depthbuffer);
+                }
+    
+                this.normaldepth_fbo.bind();
+                this.renderer.rendering_normaldepth = true;
+                gl.clearColor(1,1,1,1);
+                gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT );
+                
+                
+                this.renderer.render(this.scene, this.camera, null, 0b11);
+    
+    
+                this.renderer.rendering_normaldepth = false;
+                this.normaldepth_fbo.unbind();
+                //this.normalbuffer.toViewport();
+            
+                if(!this.ssao_fx)
+                    this.ssao_fx = new FXSSAO();
+                this.ssaobuffer = this.ssao_fx.applyFX( null, this.normalbuffer, this.depthbuffer, this.camera, this.ssaobuffer );
+                //this.ssaobuffer.toViewport();
+                
+                if(this.ssaobuffer)
+                {
+                    gl.enable(gl.BLEND);
+                    gl.blendFunc(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA);
+                    if(this.pixelated)
+                    {
+                        this.ssaobuffer.bind(0);
+                        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+                    }
+                    gl.disable( gl.DEPTH_TEST );
+                    this.ssaobuffer.toViewport( gl.shaders["blend_ssao"] );
+                    //gl.disable(gl.BLEND);
+                    //this.ssaobuffer.toViewport();
+                }
+            }
+            
         }
 
+        const vel0 = [-20,30,1]
+        const a = -10;
         //main update
         context.onupdate = (dt) => {
             //not necessary but just in case...
@@ -267,6 +340,14 @@ export class CanvasController {
             anim.assignTime(t * 0.001 * time_factor);
             //copy the skeleton in the animation to the character
             this.character.skeleton.copyFrom(anim.skeleton);
+
+            const sdt = dt * 5;
+            box.position[0] = box.position[0] + vel0[0] * sdt;
+            box.position[1] = box.position[1] + vel0[1] * sdt + 1/2 * a * sdt*sdt;
+            box.position[2] = box.position[2] + vel0[2] * sdt;
+            vel0[1] = vel0[1] + a * sdt;
+            box.position = [...box.position];
+
         }
 
         //user input ***********************
