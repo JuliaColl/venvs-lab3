@@ -1,11 +1,12 @@
 import { WS_SERVER_URI } from "../config.js";
-import { ROOM_SUMMARY_MESSAGE_TYPE, SEND_MESSAGE_COMMAND,  LATEST_STATE_COMMAND, MESSAGE_COMMAND, LEFT_ROOM_COMMAND, JOINED_ROOM_COMMAND, JOIN_ROOM_COMMAND, TARGET_MESSAGE_TYPE, CHAT_MESSAGE_TYPE } from "./COMMAND.js";
+import { ROOM_SUMMARY_MESSAGE_TYPE, SEND_MESSAGE_COMMAND,  LATEST_STATE_COMMAND, MESSAGE_COMMAND, LEFT_ROOM_COMMAND, JOINED_ROOM_COMMAND, JOIN_ROOM_COMMAND, TARGET_MESSAGE_TYPE, CHAT_MESSAGE_TYPE, AUDIO_MESSAGE_TYPE } from "./COMMAND.js";
 
 export class WsClient {  
     onCommand = null;
     onLatestState = null;
     onMessage = null;
     onTarget = null;
+    onAudioMessage = null;
     onChatMessage = null;
     onOpen = null;
     onClose = null;
@@ -21,7 +22,6 @@ export class WsClient {
             console.log('Connection Error');
             this.onError()
         };
-    
 
         this.client.onopen = () => {
             console.log('WebSocket Client Connected');
@@ -42,6 +42,7 @@ export class WsClient {
             if (command === JOINED_ROOM_COMMAND && this.onClientJoinedRoom) this.onClientJoinedRoom(body.roomId, body)
             if (command === MESSAGE_COMMAND && body.message.type === TARGET_MESSAGE_TYPE) this.onTarget(body)
             if (command === MESSAGE_COMMAND && body.message.type === CHAT_MESSAGE_TYPE) this.onChatMessage(body)
+            if (command === MESSAGE_COMMAND && body.message.type === AUDIO_MESSAGE_TYPE) this.onAudioMessage(body)
             if (command === MESSAGE_COMMAND && body.message.type === ROOM_SUMMARY_MESSAGE_TYPE) this.onRoomSummary(body.message.content)
         };
     }
@@ -67,7 +68,7 @@ export class WsClient {
         }));
     }
 
-    sendTarget= (target) => {
+    sendTarget = (target) => {
         if (this.client.readyState !== this.client.OPEN) return;
         if (target[0] === undefined) throw new Error(`Target must have field x`);
         if (target[1] === undefined) throw new Error(`Target must have field y`);
@@ -77,7 +78,7 @@ export class WsClient {
         });
     } 
 
-    sendChatMessage(message) {  // todo dest ids must be handled by server
+    sendChatMessage = (message) => {
         if (this.client.readyState !== this.client.OPEN) return;
         return this._sendMessage({
             content: {
@@ -85,6 +86,14 @@ export class WsClient {
                 id: message.id
             },
             type: CHAT_MESSAGE_TYPE
+        });
+    }
+
+    sendAudio = (blob) => {
+        if (this.client.readyState !== this.client.OPEN) return;
+        return this._sendMessage({
+            content: blob,
+            type: AUDIO_MESSAGE_TYPE
         });
     }
 }

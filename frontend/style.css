@@ -56,7 +56,7 @@ html { box-sizing: border-box; height: 100%; }
 
 .enterPage::before {
     content: "";
-    /* background-image: url(/node/9010/data/images/rooms/awesome-house.png); */ /* todo before deploy */
+    /* background-image: url(/node/9011/data/images/rooms/awesome-house.png); */ /* todo before deploy */
     background-image: url(/data/images/rooms/awesome-house.png);
     background-size: cover;
     position: absolute;
@@ -275,6 +275,12 @@ canvas, #inputOverlay, #chatOverlay, #changeRoomOverlay {
     flex-direction: column;
 }
 
+
+.relative {
+    position: relative;
+    cursor: default;
+}
+
 #inputOverlay .inputBar {
     pointer-events: auto;
     -webkit-border-radius: 20px;
@@ -369,4 +375,16 @@ canvas, #inputOverlay, #chatOverlay, #changeRoomOverlay {
     
 #inputOverlay .inputBar:focus {
      outline: none;
+}
+
+
+#mic {
+    color: #393939;
+    font-size: 24px;
+    position: absolute;
+    right: 15px;
+    top: 15px;
+    cursor: pointer;
+    z-index: 999;
+    pointer-events: auto;
 }

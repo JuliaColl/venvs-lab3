@@ -4,9 +4,9 @@
     <link rel="stylesheet" href="style.css" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/x-icon" href="/data/images/logo.png">
-    <!-- <link rel="icon" type="image/x-icon" href="/node/9010/data/images/logo.png" > --> <!-- todo deploy -->
+    <!-- <link rel="icon" type="image/x-icon" href="/node/9011/data/images/logo.png" > --> <!-- todo deploy -->
     <title>AvocadoArmchair</title>
-
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
 </head>
 
@@ -14,7 +14,7 @@
     <div class="enterPage" id="loginPage">
 
         <div class="enterContainer" id="loginContainer">
-            <!-- <img class="logo" src="/node/9010/data/images/logo.png" /> --> <!-- todo deploy -->
+            <!-- <img class="logo" src="/node/9011/data/images/logo.png" /> --> <!-- todo deploy -->
             <img class="logo" src="/data/images/logo.png" />
 
             <div class="inputContainer">
@@ -39,7 +39,7 @@
     <div class="enterPage" id="signUpPage">
 
         <div class="enterContainer" id="signupContainer">
-            <!-- <img class="logo" src="/node/9010/data/images/logo.png" /> --> <!-- todo deploy -->
+            <!-- <img class="logo" src="/node/9011/data/images/logo.png" /> --> <!-- todo deploy -->
             <img class="logo" src="/data/images/logo.png" />
             <div class="inputContainer">
                 <input type="text" id="inputUserNameSignup" class="loginInputs" placeholder="enter username">
@@ -88,7 +88,10 @@
     </div>
 
     <div id="inputOverlay">
-        <input type="text" placeholder="say something to the room..." class="inputBar showEmojis" id="inputBar" />
+        <div class="relative">
+            <input type="text" placeholder="say something to the room..." class="inputBar showEmojis" id="inputBar" />
+            <i id="mic" class="fa fa-microphone-slash"></i>
+        </div>
     </div>
 
     <canvas id="canvas"></canvas>

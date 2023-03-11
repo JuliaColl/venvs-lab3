@@ -20,7 +20,7 @@ npm run dev
 
 
 # Where is prod?
-https://ecv-etic.upf.edu/node/9010/
+https://ecv-etic.upf.edu/node/9011/
 
 # todo
 some times el minion li costa apareixer

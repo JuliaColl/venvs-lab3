@@ -12,6 +12,7 @@ import { LeaveRoomOverlayView } from "./LeaveRoomOverlayView.js";
 export class CanvasController {
     messageInputOverlayController = null;
     chatOverlayController = null;
+    audioOverlayController = null;
 
     mousePosition = [0, 0];
     //camOffset = [0, 0];
@@ -97,12 +98,14 @@ export class CanvasController {
 
             }
 
-
             this.messageInputOverlayController.wsClient = this._ws;  // todo fix this shit
+            this.audioOverlayController.wsClient = this._ws;  // todo fix this shit
 
             this._ws.onLatestState = ({ username, position, roomId }) => this.setLatestState(roomId, username, position);
 
             this._ws.onTarget = (body) => this.setOtherUserTarget(body.srcUsername, [body.message.content[0], body.message.content[1]]);
+
+            this._ws.onAudioMessage = (body) => this.audioOverlayController.onAudioReceived(body.message.content);
 
             this._ws.onChatMessage = (body) => {
                 const message = new Message(
