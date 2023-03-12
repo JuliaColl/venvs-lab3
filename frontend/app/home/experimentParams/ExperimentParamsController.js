@@ -37,7 +37,9 @@ export class ExperimentParamsController {
     };
 
     isValid = () => {
-        for (const param in this._params){
+        console.log(this._params)
+        for (const idx in this._params){
+            const param = this._params[idx]
             if (!param.isValid){
                 return false;
             }

@@ -87,6 +87,7 @@ export class CanvasController {
                 type: 'float'
             }
         ]);
+        console.log(this._experimentParamsController.isValid(), this._experimentParamsController.getValues())
 
         this._canvasView = new CanvasView();
         this._canvasView.onMouse = this.onMouse;
