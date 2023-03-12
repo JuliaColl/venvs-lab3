@@ -7,7 +7,7 @@ import { autoReconnect } from '../../../autoReconnect.js';
 import { WsClient } from "../../../clients/wsClient.js";
 import { Message } from "../../../models/Message.js";
 import { LeaveRoomOverlayView } from "./LeaveRoomOverlayView.js";
-
+import { ExperimentParamsController } from "../experimentParams/ExperimentParamsController.js";
 
 export class CanvasController {
     messageInputOverlayController = null;
@@ -60,6 +60,34 @@ export class CanvasController {
             this._hasLeaveRoomDialogBeenDismissed = true;
         }
 
+        this._experimentParamsController = new ExperimentParamsController();
+        this._experimentParamsController.loadParams([
+            {
+                description: 'Acceleration (m/&sup2;)',
+                initialValue: 9.98,
+                id: 'a',
+                minValue: 0,
+                maxValue: null,
+                type: 'float'
+            },
+            {
+                description: 'Mass (kg)',
+                initialValue: 2,
+                id: 'm',
+                minValue: 0,
+                maxValue: 10,
+                type: 'float'
+            },
+            {
+                description: 'Initial velocity (v/s)',
+                initialValue: 20,
+                id: 'v0',
+                minValue: null,
+                maxValue: null,
+                type: 'float'
+            }
+        ]);
+
         this._canvasView = new CanvasView();
         this._canvasView.onMouse = this.onMouse;
         this._initRooms();
@@ -78,13 +106,17 @@ export class CanvasController {
 
     };
 
-    show = () => this._canvasView.show();
+    show = () => {
+        this._canvasView.show();
+        this._experimentParamsController.show();
+    }
     hide = () => {
         this._canvasView.hide();
         this._leaveRoomOverlayView.hide();
+        this._experimentParamsController.hide();
     }
 
-    useSsao = true;
+    useSsao = false;
 
     onLogin = ({ username, avatar }, token) => {
         this.myUser = new User(username, avatar);

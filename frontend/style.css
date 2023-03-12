@@ -190,9 +190,7 @@ a.link:hover{
     color:rgb(78, 126, 84);
 }
 
-canvas, #inputOverlay, #chatOverlay, #changeRoomOverlay {
-    display: none;
-}
+
 
 #chatOverlay {
     max-height: calc(100vh - 80px);
@@ -303,8 +301,38 @@ canvas, #inputOverlay, #chatOverlay, #changeRoomOverlay {
     }
 }
 
+#details {
+    position: absolute;
+    left: 0;
+    top: 0;
+    display: flex;
+    flex-direction: column;
+}
 
-#changeRoomOverlay {
+#params .param {
+    padding-top: 15px;
+}
+#params .param .title {
+    font-size: smaller;
+    font-weight: 700;
+}
+#params .param .validation {
+    font-size: smaller;
+    color: var(--error-color-darker);
+}
+
+#params .param .input {
+    width: 100%;
+    padding: 12px 20px;
+    margin: 8px 0;
+    display: inline-block;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+
+    background-color: rgba(255,255,255, .5);
+}
+#changeRoomOverlay, #params {
     border-radius: 7px;
     border: 1px solid #9e9e9e;
     color: #121212;
@@ -316,10 +344,6 @@ canvas, #inputOverlay, #chatOverlay, #changeRoomOverlay {
     flex-direction: column;
 
     margin: 20px;
-
-    position: absolute;
-    left: 0;
-    top: 0;
 }
 
 #changeRoomOverlay button {
@@ -387,4 +411,8 @@ canvas, #inputOverlay, #chatOverlay, #changeRoomOverlay {
     cursor: pointer;
     z-index: 999;
     pointer-events: auto;
+}
+
+canvas, #inputOverlay, #chatOverlay, #changeRoomOverlay, #params {
+    display: none;
 }

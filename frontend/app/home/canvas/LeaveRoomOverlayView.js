@@ -1,5 +1,3 @@
-import { htmlToElement } from "../../../utils.js";
-
 export class LeaveRoomOverlayView {
     onYes = null;
     onDismiss = null;
