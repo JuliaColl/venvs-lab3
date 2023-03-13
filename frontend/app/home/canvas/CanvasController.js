@@ -50,7 +50,7 @@ export class CanvasController {
             this.currentRoom.removeAllUsers();
             this.currentRoom.addUser(this.myUser.username, this.myUser);
             this._ws.joinRoom(exit.toRoomId, exit.spawnPos);
-            this.myUser.setPosition(exit.spawnPos);
+            //this.myUser.setPosition(exit.spawnPos);  TODO
 
             this._leaveRoomOverlayView.hide();
 
@@ -98,7 +98,7 @@ export class CanvasController {
                 if (!this.currentRoom) return;
                 for (let username in this.currentRoom.users) {
                     const user = this.currentRoom.users[username];
-                    user.setPosition(user.getTarget());
+                    user.setPosition(user.getTarget()); // TODO
                 }
             }
         });
@@ -120,7 +120,9 @@ export class CanvasController {
     useSsao = false;
 
     onLogin = ({ username, avatar }, token) => {
-        this.myUser = new User(username, avatar);
+        
+        //this.myUser = new User(username, avatar);   //TODO set avatar and avatar_scale from backend
+        this.myUser = new User(username, "girl", 0.3);  
 
         autoReconnect(() => {
             this._ws = new WsClient(token);
@@ -168,7 +170,7 @@ export class CanvasController {
         this.renderer.setDataFolder("data");
         this.renderer.autoload_assets = true;
 
-        // set shader
+        //load shader
         this.renderer.loadShaders("shaders.txt");
 
         //attach canvas to DOM
@@ -184,8 +186,8 @@ export class CanvasController {
 
         //global settings
         var bg_color = [1, 1, 1, 1];
-        var avatar = "girl";
-        var avatar_scale = 0.3;
+        //var avatar = "girl";
+        //var avatar_scale = 0.3;
         //var avatar = "tiger";
         //var avatar_scale = 1.5;
 
@@ -204,10 +206,11 @@ export class CanvasController {
 
         //create a mesh for the girl
         var girl = new RD.SceneNode({
-            scaling: avatar_scale,
-            mesh: avatar + "/" + avatar + ".wbin",
+            scaling: this.myUser.avatar_scale,
+            mesh: this.myUser.avatar + "/" + this.myUser.avatar + ".wbin",
             material: "girl"
         });
+
         girl_pivot.addChild(girl);
         girl.skeleton = new RD.Skeleton();
         this.scene.root.addChild(girl_pivot);
@@ -220,6 +223,7 @@ export class CanvasController {
             name: "girl_selector",
             layers: 0b1000
         });
+        
         girl_pivot.addChild(girl_selector);
 
         this.walkarea = new WalkArea();
@@ -236,8 +240,8 @@ export class CanvasController {
             anim.load(url);
             return anim;
         }
-        loadAnimation("idle", "data/" + avatar + "/idle.skanim");
-        loadAnimation("walking", "data/" + avatar + "/walking.skanim");
+        loadAnimation("idle", "data/" + this.myUser.avatar + "/idle.skanim");
+        loadAnimation("walking", "data/" + this.myUser.avatar + "/walking.skanim");
         //loadAnimation("dance","data/girl/dance.skanim");
 
         //load a GLTF for the room
@@ -252,7 +256,7 @@ export class CanvasController {
         var floor = new RD.SceneNode({
             position: [0,0,0],
             scaling: 100,
-            color: [1,1,1,1],
+            color: [0.95,0.95,0.95,1],
             mesh: "planeXZ",
         });
         this.scene.root.addChild( floor );
@@ -266,6 +270,12 @@ export class CanvasController {
         //box.shader = "phong";
         box.scale([10,10,10])
         this.scene.root.addChild(box);
+
+
+        // to check todo remove
+        this.myUser.position = [...girl_pivot.position];
+        this.myUser.target = [...girl_pivot.position];
+
 
         // main loop ***********************
 
@@ -287,7 +297,6 @@ export class CanvasController {
             this.renderer.clear(bg_color);
             //render scene
             this.renderer.render(this.scene, this.camera, null, 0b11);
-
 
             /*var vertices = this.walkarea.getVertices();
             this.renderer.renderPoints(vertices, null, this.camera, null, null, null, gl.LINES);*/
@@ -353,6 +362,7 @@ export class CanvasController {
             var anim = this.animations.idle;
             var time_factor = 1;
 
+            /* 
             //control with keys
             if (gl.keys["UP"]) {
                 girl_pivot.moveLocal([0, 0, 1]);
@@ -368,15 +378,44 @@ export class CanvasController {
             else if (gl.keys["RIGHT"])
                 girl_pivot.rotate(-90 * DEG2RAD * dt, [0, 1, 0]);
 
+
             var pos = girl_pivot.position;
-            var nearest_pos = this.walkarea.adjustPosition(pos);
-            girl_pivot.position = nearest_pos;
+            var nearest = this.walkarea.adjustPosition(pos);
+            girl_pivot.position = nearestposition;
+            girl_pivot.position = nearest.position;
+            */
+
+            
+            //update move with mouse
+            let dist = vec3.distance([...girl_pivot.position], [...this.myUser.target]);
+            let offset = 4;
+            //console.log(dist)
+            if(dist > offset)
+            {
+                //girl_pivot.orientTo(this.myUser.target, [0,1,0])
+                girl_pivot.moveLocal([0, 0, 1]);
+                anim = this.animations.walking;
+                var pos = girl_pivot.position;
+                var nearest = this.walkarea.adjustPosition(pos);
+                girl_pivot.position = nearest.position;
+
+                if(nearest.isUpdated){
+                    this.myUser.target = [...girl_pivot.position]
+                }
+
+                //console.log("girl pos: " + girl_pivot.position + " target pos: " + this.myUser.target)
+                //console.log(dist)  
+            }
+            else{
+                this.myUser.target = [...girl_pivot.position]
+            }
 
             //move bones in the skeleton based on animation
             anim.assignTime(t * 0.001 * time_factor);
             //copy the skeleton in the animation to the character
             this.character.skeleton.copyFrom(anim.skeleton);
 
+            // update tir parabolic
             const sdt = dt * 5;
             box.position[0] = box.position[0] + vel0[0] * sdt;
             box.position[1] = box.position[1] + vel0[1] * sdt + 1/2 * a * sdt*sdt;
@@ -406,6 +445,8 @@ export class CanvasController {
                     console.log( "floor position clicked", ray.collision_point );
                     girl_pivot.orientTo(ray.collision_point, [0,1,0])
 				    //girl_pivot.lookAt(ray.collision_point, [0,1,0])
+                    this.myUser.target = [...ray.collision_point];
+                    //girl_pivot.position = [...ray.collision_point];
                 }
             }
         }
@@ -559,14 +600,14 @@ export class CanvasController {
 
         this.currentRoom = this.rooms[roomId];
 
-        position = position ? position : [0, 0];
+        position = position ? position : [0, 0, 0];
 
         this._ws.joinRoom(roomId, position);
 
 
-        this.myUser.setPosition(position);
+        //this.myUser.setPosition(position);  //TODO
 
-        this.camOffset = [-position[0], -position[1]];
+        this.camOffset = [-position[0], -position[1], 0];  // TODO update in 3D
         this.currentRoom.addUser(username, this.myUser);
     };
 
@@ -590,7 +631,7 @@ export class CanvasController {
         users.forEach(({ username, avatar, position }) => {
             this.currentRoom.addUser(username, new User(username, avatar));
             const user = this.currentRoom.users[username];
-            user.setPosition(position);
+            //user.setPosition(position);   TODO
         })
     }
 }

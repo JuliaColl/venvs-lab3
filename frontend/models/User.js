@@ -4,10 +4,11 @@ export class User {
 
     username = null;
 
-    position = [0, 0];
-    target = [0, 0];
+    position = [0, 0, 0];
+    target = [0, 0, 0];
 
-    avatarId = 0;
+    avatar = "girl";
+    avatar_scale = 0.3;
 
     facing = FACING.FACING_FRONT;
     animation = 'idle';
@@ -16,13 +17,14 @@ export class User {
 
     tooFar = false;
 
-    constructor(username, avatarId) {
+    constructor(username, avatar, avatar_scale) {
         this.username = username;
-        this.avatarId = parseInt(avatarId);
+        this.avatar = avatar;
+        this.avatar_scale = avatar_scale;
     }
 
     setTarget(position){
-        this.target = [position[0], position[1]];
+        this.target = [position[0], position[1], 0];  //TODO
     }
 
     getTarget(){
@@ -30,7 +32,7 @@ export class User {
     }
 
     setPosition(position){
-        this.position = [position[0], position[1]]
+        this.position = [position[0], position[1], 0]   //TODO
         this.setTarget(this.position)
     }
 

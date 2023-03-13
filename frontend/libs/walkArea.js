@@ -87,7 +87,7 @@ WalkArea.prototype.adjustPosition = function(pos)
 
 	//check if inside
 	if( this.isInsideArea( pos ) )
-		return pos;
+		return {isUpdated: false, position: pos};
 
 	//if not inside
 	var min_dist = 100000;
@@ -110,7 +110,7 @@ WalkArea.prototype.adjustPosition = function(pos)
 	}
 
 	nearest[1] = pos[1]; //same Y
-	return nearest;
+	return {isUpdated: true, position: nearest};
 }
 
 function pointInShape( pos , shape ) {
