@@ -185,7 +185,7 @@ export class CanvasController {
         this.camera.lookAt([0, 40, 100], [0, 20, 0], [0, 1, 0]);
 
         //global settings
-        var bg_color = [1, 1, 1, 1];
+        var bg_color = [1,1,1, 1];
         //var avatar = "girl";
         //var avatar_scale = 0.3;
         //var avatar = "tiger";
@@ -226,11 +226,6 @@ export class CanvasController {
         
         girl_pivot.addChild(girl_selector);
 
-        this.walkarea = new WalkArea();
-        this.walkarea.addRect([-50, 0, -30], 80, 50);
-        this.walkarea.addRect([-90, 0, -10], 80, 20);
-        this.walkarea.addRect([-110, 0, -30], 40, 50);
-
 
         this.character = girl;
 
@@ -254,13 +249,15 @@ export class CanvasController {
 
         // create floor
         var floor = new RD.SceneNode({
-            position: [0,0,0],
-            scaling: 100,
+            position: [-50,0,0],
+            scaling: 400,
             color: [0.95,0.95,0.95,1],
             mesh: "planeXZ",
         });
         this.scene.root.addChild( floor );
 
+        this.walkarea = new WalkArea();
+        this.walkarea.addRect([-250,0,-200], 400, 400);
 
         //create sphere
         var box = new RD.SceneNode();
@@ -286,21 +283,23 @@ export class CanvasController {
             gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
 
             var girlpos = girl_pivot.localToGlobal([0, 40, 0]);
-            //var campos = girl_pivot.localToGlobal([0,50,0]);
-            var camtarget = girl_pivot.localToGlobal([0, 50, 70]);
-            var smoothtarget = vec3.lerp(vec3.create(), this.camera.target, camtarget, 0.02);
+            var campos = girl_pivot.localToGlobal([0,60,-70]);
+            var camtarget = girl_pivot.localToGlobal([0, 10, 70]);
+            var smoothtarget = vec3.lerp(vec3.create(), this.camera.target, camtarget, 0.1);
 
             this.camera.perspective(60, gl.canvas.width / gl.canvas.height, 0.1, 1000);
-            this.camera.lookAt(this.camera.position, girlpos, [0, 1, 0]);
+            this.camera.lookAt(campos, smoothtarget, [0, 1, 0]);
 
             //clear
             this.renderer.clear(bg_color);
             //render scene
             this.renderer.render(this.scene, this.camera, null, 0b11);
 
-            /*var vertices = this.walkarea.getVertices();
-            this.renderer.renderPoints(vertices, null, this.camera, null, null, null, gl.LINES);*/
-
+            /*
+            var vertices = this.walkarea.getVertices();
+            this.renderer.renderPoints(vertices, null, this.camera, null, null, null, gl.LINES);
+            */
+           
             //gizmo.setTargets([monkey]);
             //this.renderer.render( this.scene, this.camera, [gizmo] ); //render gizmo on top
 
@@ -362,7 +361,7 @@ export class CanvasController {
             var anim = this.animations.idle;
             var time_factor = 1;
 
-            /* 
+            
             //control with keys
             if (gl.keys["UP"]) {
                 girl_pivot.moveLocal([0, 0, 1]);
@@ -381,9 +380,8 @@ export class CanvasController {
 
             var pos = girl_pivot.position;
             var nearest = this.walkarea.adjustPosition(pos);
-            girl_pivot.position = nearestposition;
             girl_pivot.position = nearest.position;
-            */
+            
 
             
             //update move with mouse
@@ -392,6 +390,7 @@ export class CanvasController {
             //console.log(dist)
             if(dist > offset)
             {
+                //console.log("entered with target: " + this.myUser.target)
                 //girl_pivot.orientTo(this.myUser.target, [0,1,0])
                 girl_pivot.moveLocal([0, 0, 1]);
                 anim = this.animations.walking;
@@ -569,6 +568,8 @@ export class CanvasController {
     };
 
     onMouse = (e) => {
+
+        /*
         var rect = this._canvasView.getBoundingClientRect();
         this.mousePosition[0] = e.clientX - rect.left;
         this.mousePosition[1] = e.clientY - rect.top;
@@ -590,6 +591,8 @@ export class CanvasController {
 
             }
         }
+        */
+        
     };
 
     setLatestState = (roomId, username, position) => {
