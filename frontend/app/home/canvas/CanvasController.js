@@ -52,7 +52,7 @@ export class CanvasController {
             this.currentRoom.removeAllUsers();
             this.currentRoom.addUser(this.myUser.username, this.myUser);
             this._ws.joinRoom(exit.toRoomId, exit.spawnPos);
-            //this.myUser.setPosition(exit.spawnPos);  TODO
+            this.myUser.setPosition(exit.spawnPos);  
 
             this._leaveRoomOverlayView.hide();
 
@@ -100,7 +100,7 @@ export class CanvasController {
                 if (!this.currentRoom) return;
                 for (let username in this.currentRoom.users) {
                     const user = this.currentRoom.users[username];
-                    user.setPosition(user.getTarget()); // TODO
+                    user.position = user.target; // TODO
                 }
             }
         });
@@ -242,11 +242,13 @@ export class CanvasController {
         loadAnimation("idle", "data/" + this.myUser.avatar + "/idle.skanim");
         loadAnimation("walking", "data/" + this.myUser.avatar + "/walking.skanim");
         //loadAnimation("dance","data/girl/dance.skanim");
-
+        
+        /*
         //load a GLTF for the room
         var room = new RD.SceneNode({ scaling: 40, position: [0, -.01, 0] });
         room.loadGLTF("data/room.gltf");
-        //this.scene.root.addChild(room);
+        this.scene.root.addChild(room);
+        */
 
         var gizmo = new RD.Gizmo();
         gizmo.mode = RD.Gizmo.ALL;
@@ -275,9 +277,7 @@ export class CanvasController {
         this.scene.root.addChild(box);
 
 
-        // to check todo remove
-        //this.myUser.position = [...girl_pivot.position];
-        //this.myUser.target = [...girl_pivot.position];
+
 
 
         // main loop ***********************
@@ -384,7 +384,7 @@ export class CanvasController {
                 const user = this.currentRoom.users[username];
 
                 //update move with mouse
-                let dist = vec3.distance([...user.position], [...user.target]);
+                let dist = vec3.distance([...user.get3DPosition()], [...user.get3DTarget()]);
                 let offset = 4;
 
                 if(dist > offset)
@@ -393,17 +393,18 @@ export class CanvasController {
                     anim = this.animations.walking;
                     var pos = userNode.position;
                     var nearest = this.walkarea.adjustPosition(pos);
-                    userNode.position = user.position = nearest.position;
-    
+                    userNode.position = nearest.position;
+                    user.update3Dposition(nearest.position);
+
                     if(nearest.isUpdated){
-                        user.target = [...userNode.position]
+                        user.set3DTarget(userNode.position)
                     }
     
                     //console.log("girl pos: " + girl_pivot.position + " target pos: " + this.myUser.target)
                     //console.log(dist)  
                 }
                 else{
-                    user.target = [...userNode.position]
+                    user.set3DTarget(userNode.position)
                 }
     
     
@@ -444,11 +445,15 @@ export class CanvasController {
                 if( ray.testPlane( RD.ZERO, RD.UP ) ) //collision with infinite plane
                 {
                     console.log( "floor position clicked", ray.collision_point );
+                    // update target position of my user
                     const myNodeSceneUser = this.scene.getNodeById(this.myUser.username)
                     myNodeSceneUser.orientTo(ray.collision_point, [0,1,0])
-				    //girl_pivot.lookAt(ray.collision_point, [0,1,0])
-                    this.myUser.target = [...ray.collision_point];
-                    //girl_pivot.position = [...ray.collision_point];
+                    this.myUser.set3DTarget(ray.collision_point)
+
+                    //send new target to other users in the room
+                    if (this.myUser) {
+                        this._ws.sendTarget(this.myUser.target);
+                    }
                 }
             }
         }
@@ -477,24 +482,8 @@ export class CanvasController {
         context.animate();
     }
 
-    loop = () => {
-        //update our canvas
-        this._canvasView.draw(this.currentRoom, this.camOffset);
 
-        //to compute seconds since last loop
-        var now = performance.now();
-        //compute difference and convert to seconds
-        var elapsed_time = (now - this.last) / 1000;
-        //store current time into last time
-        this.last = now;
-
-        //now we can execute our update method
-        this.update(elapsed_time);
-
-        //request to call loop() again before next frame
-        requestAnimationFrame(this.loop);
-    };
-
+    /*
     update = (dt) => {
         if (this.currentRoom === null) return;
 
@@ -532,42 +521,12 @@ export class CanvasController {
         this._leaveRoomOverlayView.show();
     };
 
-    updateOffset = () => {
-
-        const [maxX, maxY] = this._canvasView.getMaxOffset(this.currentRoom.width, this.currentRoom.height);
-        const [minX, minY] = this._canvasView.getMinOffset(this.currentRoom.width, this.currentRoom.height);
-
-
-        if (maxX > minX) {
-            var x = clamp(this.myUser.position[0], minX, maxX);
-            this.camOffset[0] = -x;
-        } else {
-            this.camOffset[0] = 0;
-
-        }
-
-        if (maxY > minY) {
-            var y = clamp(this.myUser.position[1], minY, maxY);
-            this.camOffset[1] = -y;
-        } else {
-            this.camOffset[1] = 0;
-        }
-    };
+  */
 
     _initRooms = async () => {
         // create the rooms
         const rooms = (await fetch(STATIC_FILE_URI + "data/world.json").then(r => r.json())).map(room => new Room(room))
-        rooms.forEach(
-            (room) => {
-                var img = this._canvasView.getRoomImage(room.url);
-                img.room = room.id;
-                img.onload = () => {
-                    this.rooms[img.room].height = img.height;
-                    this.rooms[img.room].width = img.width;
-                }
-                this.rooms[room.id] = room;
-            }
-        );
+        rooms.forEach((room) => {this.rooms[room.id] = room;});
     };
 
     onMouse = (e) => {
@@ -606,14 +565,14 @@ export class CanvasController {
 
         this.currentRoom = this.rooms[roomId];
 
-        position = position ? position : [0, 0, 0];
+        position = position ? position : [0, 0];
 
         this._ws.joinRoom(roomId, position);
 
+        this.myUser.setPosition(position); 
 
-        //this.myUser.setPosition(position);  //TODO
-
-        this.camOffset = [-position[0], -position[1], 0];  // TODO update in 3D
+        //this.camOffset = [-position[0], -position[1], 0];  // TODO update in 3D
+        
         this.currentRoom.addUser(username, this.myUser);
         this.addUserToScene(this.myUser)
         //add room to the scene
@@ -624,6 +583,10 @@ export class CanvasController {
     setOtherUserTarget = (srcUsername, targetPos) => {
         const user = this.currentRoom.users[srcUsername];
         user?.setTarget(targetPos);
+
+        const userNode = this.scene.getNodeById(srcUsername)
+        userNode.orientTo(user.get3DTarget(), [0,1,0])
+
     };
 
 
@@ -633,6 +596,8 @@ export class CanvasController {
         const newUser = new User(username, avatar);
         newUser.setPosition(position);
         this.currentRoom.addUser(username, newUser);
+        this.addUserToScene(newUser)
+
         console.log(`User ${username} joined the room ${roomId}`)
     }
 

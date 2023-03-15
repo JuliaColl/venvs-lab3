@@ -4,8 +4,8 @@ export class User {
 
     username = null;
 
-    position = [0, 0, 0];
-    target = [0, 0, 0];
+    position = [0, 0];
+    target = [0, 0];  
 
     avatar = "girl";
     avatar_scale = 0.3;
@@ -22,9 +22,9 @@ export class User {
         this.avatar = avatar;
         this.avatar_scale = avatar_scale;
     }
-
+    
     setTarget(position){
-        this.target = [position[0], position[1], 0];  //TODO
+        this.target = [position[0], position[1]];
     }
 
     getTarget(){
@@ -32,12 +32,33 @@ export class User {
     }
 
     setPosition(position){
-        this.position = [position[0], position[1], 0]   //TODO
+        this.position = [position[0], position[1]]
         this.setTarget(this.position)
     }
 
     getPosition(){
         return [...this.position]
+    }
+
+    set3DTarget(position){  //recives a 3d position but we only store the x and z component
+        this.target = [position[0], position[2]]; 
+    }
+
+    get3DTarget(){
+        return [this.target[0], 0, this.target[1]]
+    }
+ 
+    set3DPosition(position){   //recives a 3d position but we only store the x and z component
+        this.position = [position[0], position[2]] 
+        this.set3DTarget(position)
+    }
+
+    get3DPosition(){  
+        return [this.position[0], 0, this.position[1]]
+    }
+
+    update3Dposition(position){
+        this.position = [position[0], position[2]] 
     }
 
     updatePos(dt) {
