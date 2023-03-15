@@ -390,7 +390,7 @@ export class CanvasController {
                 if(dist > offset)
                 {
                     userNode.moveLocal([0, 0, 1]);
-                    anim = this.animations.walking;
+                    //anim = this.animations.walking;
                     var pos = userNode.position;
                     var nearest = this.walkarea.adjustPosition(pos);
                     userNode.position = nearest.position;
