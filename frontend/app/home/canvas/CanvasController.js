@@ -9,7 +9,8 @@ import { Message } from "../../../models/Message.js";
 import { LeaveRoomOverlayView } from "./LeaveRoomOverlayView.js";
 import { ExperimentParamsController } from "../experimentParams/ExperimentParamsController.js";
 
-var moveCam = false;
+var moveCam = true;
+var isDemo = false; //TODO put it nice
 
 export class CanvasController {
     messageInputOverlayController = null;
@@ -52,7 +53,7 @@ export class CanvasController {
             this.currentRoom.removeAllUsers();
             this.currentRoom.addUser(this.myUser.username, this.myUser);
             this._ws.joinRoom(exit.toRoomId, exit.spawnPos);
-            this.myUser.setPosition(exit.spawnPos);  
+            this.myUser.setPosition(exit.spawnPos);
 
             this._leaveRoomOverlayView.hide();
 
@@ -63,34 +64,7 @@ export class CanvasController {
         }
 
         this._experimentParamsController = new ExperimentParamsController();
-        this._experimentParamsController.loadParams([
-            {
-                description: 'Acceleration (m/&sup2;)',
-                initialValue: 9.98,
-                id: 'a',
-                minValue: 0,
-                maxValue: null,
-                type: 'float'
-            },
-            {
-                description: 'Mass (kg)',
-                initialValue: 2,
-                id: 'm',
-                minValue: 0,
-                maxValue: 10,
-                type: 'float'
-            },
-            {
-                description: 'Initial velocity (v/s)',
-                initialValue: 20,
-                id: 'v0',
-                minValue: null,
-                maxValue: null,
-                type: 'float'
-            }
-        ]);
-        console.log(this._experimentParamsController.isValid(), this._experimentParamsController.getValues())
-
+        
         this._canvasView = new CanvasView();
         this._canvasView.onMouse = this.onMouse;
         this._initRooms();
@@ -122,9 +96,9 @@ export class CanvasController {
     useSsao = false;
 
     onLogin = ({ username, avatar }, token) => {
-        
+
         //this.myUser = new User(username, avatar, avatar_scale);   //TODO set avatar and avatar_scale from backend
-        this.myUser = new User(username, "girl", 0.3);  
+        this.myUser = new User(username, "girl", 0.3);
 
         autoReconnect(() => {
             this._ws = new WsClient(token);
@@ -161,11 +135,8 @@ export class CanvasController {
             return this._ws;
         })
 
-        //this.loop();
-
-
         //create the rendering context
-        var context = GL.create({canvas: document.getElementById("canvas")});
+        var context = GL.create({ canvas: document.getElementById("canvas") });
 
         //setup renderer
         this.renderer = new RD.Renderer(context);
@@ -187,51 +158,11 @@ export class CanvasController {
         this.camera.lookAt([0, 40, 100], [0, 20, 0], [0, 1, 0]);
 
         //global settings
-        var bg_color = [1,1,1, 1];
+        var bg_color = [1, 1, 1, 1];
         //var avatar = "girl";
         //var avatar_scale = 0.3;
         //var avatar = "tiger";
         //var avatar_scale = 1.5;
-
-        /*
-        //create material for the girl
-        var mat = new RD.Material({
-            textures: {
-                color: "girl/girl.png"
-            }
-        });
-        mat.register("girl");
-
-        //create pivot point for the girl
-        var girl_pivot = new RD.SceneNode({
-            position: [-40, 0, -40]
-        });
-
-        //create a mesh for the girl
-        var girl = new RD.SceneNode({
-            scaling: this.myUser.avatar_scale,
-            mesh: this.myUser.avatar + "/" + this.myUser.avatar + ".wbin",
-            material: "girl"
-        });
-
-        girl_pivot.addChild(girl);
-        girl.skeleton = new RD.Skeleton();
-        this.scene.root.addChild(girl_pivot);
-
-        var girl_selector = new RD.SceneNode({
-            position: [0, 20, 0],
-            mesh: "cube",
-            material: "girl",
-            scaling: [8, 20, 8],
-            name: "girl_selector",
-            layers: 0b1000
-        });
-        
-        girl_pivot.addChild(girl_selector);
-
-
-        this.character = girl;
-        */
 
         //load some animations
         const loadAnimation = (name, url) => {
@@ -242,7 +173,7 @@ export class CanvasController {
         loadAnimation("idle", "data/" + this.myUser.avatar + "/idle.skanim");
         loadAnimation("walking", "data/" + this.myUser.avatar + "/walking.skanim");
         //loadAnimation("dance","data/girl/dance.skanim");
-        
+
         /*
         //load a GLTF for the room
         var room = new RD.SceneNode({ scaling: 40, position: [0, -.01, 0] });
@@ -254,31 +185,18 @@ export class CanvasController {
         gizmo.mode = RD.Gizmo.ALL;
 
         /*
-        // create floor
-        var floor = new RD.SceneNode({
-            position: [0,0,0],
-            scaling: 400,
-            color: [0.95,0.95,0.95,1],
-            mesh: "planeXZ",
-        });
-        this.scene.root.addChild( floor );
-
-        this.walkarea = new WalkArea();
-        this.walkarea.addRect([-200,0,-200], 400, 400);
-        */
-
         //create sphere
-        var box = new RD.SceneNode();
-        box.position = [0,10,0]
-        box.color = [1,0,0,1]
-        box.mesh = "cube";
+        var box = new RD.SceneNode({
+            position: [0, 10, 0],
+            mesh: "cube",
+            color: [1, 0, 0, 1],
+            scaling: [10, 10, 10],
+            name: "parabolic",
+        });
+
         //box.shader = "phong";
-        box.scale([10,10,10])
         this.scene.root.addChild(box);
-
-
-
-
+        */
 
         // main loop ***********************
 
@@ -291,15 +209,15 @@ export class CanvasController {
             const myNodeSceneUser = this.scene.getNodeById(this.myUser.username)
 
             var girlpos = myNodeSceneUser.localToGlobal([0, 40, 0]);
-            var campos = myNodeSceneUser.localToGlobal([0,60,-70]);
+            var campos = myNodeSceneUser.localToGlobal([0, 60, -70]);
             var camtarget = myNodeSceneUser.localToGlobal([0, 10, 70]);
             var smoothtarget = vec3.lerp(vec3.create(), this.camera.target, camtarget, 0.1);
 
             this.camera.perspective(60, gl.canvas.width / gl.canvas.height, 0.1, 1000);
-            if (moveCam){
+            if (moveCam) {
                 this.camera.lookAt(this.camera.position, this.camera.target, [0, 1, 0]);
-            }else{
-                this.camera.lookAt([0,65,0], girlpos, [0, 1, 0]);
+            } else {
+                this.camera.lookAt([0, 65, 0], girlpos, [0, 1, 0]);
             }
 
             //clear
@@ -316,59 +234,56 @@ export class CanvasController {
             //this.renderer.render( this.scene, this.camera, [gizmo] ); //render gizmo on top
 
             // shader
-            if (this.useSsao){
+            if (this.useSsao) {
                 var w = gl.canvas.width;
                 var h = gl.canvas.height;
-                if(!this.normaldepth_fbo || this.normalbuffer.width != w || this.normalbuffer.height != h )
-                {
-                    this.normalbuffer = new GL.Texture( w,h, { format: gl.RGB } );
-                    this.depthbuffer = new GL.Texture( w,h, { format: gl.DEPTH_COMPONENT, type: gl.UNSIGNED_SHORT } );
+                if (!this.normaldepth_fbo || this.normalbuffer.width != w || this.normalbuffer.height != h) {
+                    this.normalbuffer = new GL.Texture(w, h, { format: gl.RGB });
+                    this.depthbuffer = new GL.Texture(w, h, { format: gl.DEPTH_COMPONENT, type: gl.UNSIGNED_SHORT });
                     this.normaldepth_fbo = new GL.FBO([this.normalbuffer], this.depthbuffer);
                 }
-    
+
                 this.normaldepth_fbo.bind();
                 this.renderer.rendering_normaldepth = true;
-                gl.clearColor(1,1,1,1);
-                gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT );
-                
-                
+                gl.clearColor(1, 1, 1, 1);
+                gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+
                 this.renderer.render(this.scene, this.camera, null, 0b11);
-    
-    
+
+
                 this.renderer.rendering_normaldepth = false;
                 this.normaldepth_fbo.unbind();
                 //this.normalbuffer.toViewport();
-            
-                if(!this.ssao_fx)
+
+                if (!this.ssao_fx)
                     this.ssao_fx = new FXSSAO();
-                this.ssaobuffer = this.ssao_fx.applyFX( null, this.normalbuffer, this.depthbuffer, this.camera, this.ssaobuffer );
+                this.ssaobuffer = this.ssao_fx.applyFX(null, this.normalbuffer, this.depthbuffer, this.camera, this.ssaobuffer);
                 //this.ssaobuffer.toViewport();
-                
-                if(this.ssaobuffer)
-                {
+
+                if (this.ssaobuffer) {
                     gl.enable(gl.BLEND);
-                    gl.blendFunc(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA);
-                    if(this.pixelated)
-                    {
+                    gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+                    if (this.pixelated) {
                         this.ssaobuffer.bind(0);
                         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
                     }
-                    gl.disable( gl.DEPTH_TEST );
-                    this.ssaobuffer.toViewport( gl.shaders["blend_ssao"] );
+                    gl.disable(gl.DEPTH_TEST);
+                    this.ssaobuffer.toViewport(gl.shaders["blend_ssao"]);
                     //gl.disable(gl.BLEND);
                     //this.ssaobuffer.toViewport();
                 }
             }
-            
+
         }
 
-        const vel0 = [-20,30,1]
+        const vel0 = [-20, 30, 1]
         const a = -10;
         //main update
         context.onupdate = (dt) => {
             //not necessary but just in case...
             this.scene.update(dt);
-            
+
             // to change the camera mode
             if (gl.keys["C"]) {
                 moveCam = !moveCam
@@ -379,7 +294,7 @@ export class CanvasController {
                 var t = getTime();
                 var anim = this.animations.idle;
                 var time_factor = 1;
-    
+
                 const userNode = this.scene.getNodeById(username)
                 const user = this.currentRoom.users[username];
 
@@ -387,8 +302,7 @@ export class CanvasController {
                 let dist = vec3.distance([...user.get3DPosition()], [...user.get3DTarget()]);
                 let offset = 4;
 
-                if(dist > offset)
-                {
+                if (dist > offset) {
                     userNode.moveLocal([0, 0, 1]);
                     //anim = this.animations.walking;
                     var pos = userNode.position;
@@ -396,35 +310,60 @@ export class CanvasController {
                     userNode.position = nearest.position;
                     user.update3Dposition(nearest.position);
 
-                    if(nearest.isUpdated){
+                    if (nearest.isUpdated) {
                         user.set3DTarget(userNode.position)
                     }
-    
+
                     //console.log("girl pos: " + girl_pivot.position + " target pos: " + this.myUser.target)
                     //console.log(dist)  
                 }
-                else{
+                else {
                     user.set3DTarget(userNode.position)
                 }
-    
-    
+
+
                 //move bones in the skeleton based on animation
                 anim.assignTime(t * 0.001 * time_factor);
                 //copy the skeleton in the animation to the character
                 this.character.skeleton.copyFrom(anim.skeleton);
-            
+
             }
 
-           
 
+            /*
             // update tir parabolic
             const sdt = dt * 5;
             box.position[0] = box.position[0] + vel0[0] * sdt;
-            box.position[1] = box.position[1] + vel0[1] * sdt + 1/2 * a * sdt*sdt;
+            box.position[1] = box.position[1] + vel0[1] * sdt + 1 / 2 * a * sdt * sdt;
             box.position[2] = box.position[2] + vel0[2] * sdt;
             vel0[1] = vel0[1] + a * sdt;
             box.position = [...box.position];
+            */
 
+            if (isDemo) {   
+                const dynamic_object = this.currentRoom.demo.dynamic_object;
+                const node = this.scene.getNodeById(dynamic_object.node.id);
+                node.position = dynamic_object.update(dt);
+            }
+
+            if(gl.keys["ENTER"]){  // TODO submit button
+                isDemo = !isDemo
+
+                
+                const values = this._experimentParamsController.getValues()
+                const dynamic_object = this.currentRoom.demo.dynamic_object;
+                dynamic_object.setParams(values);
+
+
+                /* TODO add this 
+                if(this._experimentParamsController.isValid()){
+                    const values = this._experimentParamsController.getValues()
+                    const dynamic_object = this.currentRoom.demo.dynamic_object;
+                    dynamic_object.setParams(values);
+
+                } 
+                */
+            }
         }
 
         //user input ***********************
@@ -440,14 +379,14 @@ export class CanvasController {
                 //compute collision with scene
                 var ray = this.camera.getRay(e.canvasx, e.canvasy);
                 // var node = this.scene.testRay(ray, null, 10000, 0b1000);
-                
-                
-                if( ray.testPlane( RD.ZERO, RD.UP ) ) //collision with infinite plane
+
+
+                if (ray.testPlane(RD.ZERO, RD.UP)) //collision with infinite plane
                 {
-                    console.log( "floor position clicked", ray.collision_point );
+                    console.log("floor position clicked", ray.collision_point);
                     // update target position of my user
                     const myNodeSceneUser = this.scene.getNodeById(this.myUser.username)
-                    myNodeSceneUser.orientTo(ray.collision_point, [0,1,0])
+                    myNodeSceneUser.orientTo(ray.collision_point, [0, 1, 0])
                     this.myUser.set3DTarget(ray.collision_point)
 
                     //send new target to other users in the room
@@ -461,7 +400,7 @@ export class CanvasController {
         context.onmousemove = (e) => {
             if (e.dragging) {
                 //orbit camera around
-                this.camera.orbit( e.deltax * -0.01, RD.UP );
+                this.camera.orbit(e.deltax * -0.01, RD.UP);
                 //this.camera.position = vec3.scaleAndAdd( this.camera.position, this.camera.position, RD.UP, e.deltay );
                 this.camera.move([-e.deltax * 0.1, e.deltay * 0.1, 0]);
                 //girl_pivot.rotate(e.deltax*-0.003,[0,1,0]);
@@ -526,7 +465,7 @@ export class CanvasController {
     _initRooms = async () => {
         // create the rooms
         const rooms = (await fetch(STATIC_FILE_URI + "data/world.json").then(r => r.json())).map(room => new Room(room))
-        rooms.forEach((room) => {this.rooms[room.id] = room;});
+        rooms.forEach((room) => { this.rooms[room.id] = room; });
     };
 
     onMouse = (e) => {
@@ -554,7 +493,7 @@ export class CanvasController {
             }
         }
         */
-        
+
     };
 
     setLatestState = (roomId, username, position) => {
@@ -569,10 +508,10 @@ export class CanvasController {
 
         this._ws.joinRoom(roomId, position);
 
-        this.myUser.setPosition(position); 
+        this.myUser.setPosition(position);
 
         //this.camOffset = [-position[0], -position[1], 0];  // TODO update in 3D
-        
+
         this.currentRoom.addUser(username, this.myUser);
         this.addUserToScene(this.myUser)
         //add room to the scene
@@ -585,7 +524,7 @@ export class CanvasController {
         user?.setTarget(targetPos);
 
         const userNode = this.scene.getNodeById(srcUsername)
-        userNode.orientTo(user.get3DTarget(), [0,1,0])
+        userNode.orientTo(user.get3DTarget(), [0, 1, 0])
 
     };
 
@@ -603,7 +542,7 @@ export class CanvasController {
 
     initCurrentRoom = (roomId, users) => {
         if (roomId !== this.currentRoom.id) return;
-        
+
         this.addCurrentRoomToScene();
 
         users.forEach(({ username, avatar, position }) => {
@@ -613,26 +552,54 @@ export class CanvasController {
             this.addUserToScene(user)
         })
 
+        const params = this.currentRoom.demo.dynamic_object.params
+        for (const key in params) {
+            this._experimentParamsController.loadParam({
+                description: params[key].description,
+                initialValue: params[key].value,
+                id: key,
+                minValue: null,  //TODO
+                maxValue: null,  // TODO
+                type: 'float'  //TODO
+            })
+        }
+
+        console.log(this._experimentParamsController.isValid(), this._experimentParamsController.getValues())
+
+
+
     }
 
     addCurrentRoomToScene = () => {
         // create floor
         const floor = new RD.SceneNode({
-            position: [0,0,0],
+            position: [0, 0, 0],
             scaling: this.currentRoom.scale,
-            color: [0.95,0.95,0.95,1],
+            color: [0.95, 0.95, 0.95, 1],
             mesh: "planeXZ",
         });
 
-        this.scene.root.addChild( floor );
-        
+        this.scene.root.addChild(floor);
+
+        // Set walk area
         const walkarea = this.currentRoom.walkarea
         this.walkarea = new WalkArea();
-        this.walkarea.addRect([-Math.round(walkarea[0]/2),0,-Math.round(walkarea[1]/2)], walkarea[0], walkarea[1]);
+        this.walkarea.addRect([-Math.round(walkarea[0] / 2), 0, -Math.round(walkarea[1] / 2)], walkarea[0], walkarea[1]);
+
+        // create demo
+        const demo = this.currentRoom.demo;
+        var dynamic_object = new RD.SceneNode(demo.dynamic_object.node);
+        this.scene.root.addChild(dynamic_object);
+
+        demo.static_objects.forEach( (node) => {
+            var static_objects = new RD.SceneNode(node);
+            this.scene.root.addChild(static_objects);
+        })
+
     }
 
     addUserToScene = (user) => {
-         //create material for the girl
+        //create material for the girl
         var mat = new RD.Material({
             textures: {
                 color: "girl/girl.png"
@@ -665,9 +632,10 @@ export class CanvasController {
             name: "girl_selector",
             layers: 0b1000
         });
-        
+
         girl_pivot.addChild(girl_selector);
 
-        this.character = girl;
+
+        this.character = girl;  //TODO animation
     }
 }
