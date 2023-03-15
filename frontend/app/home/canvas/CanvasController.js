@@ -193,6 +193,7 @@ export class CanvasController {
         //var avatar = "tiger";
         //var avatar_scale = 1.5;
 
+        /*
         //create material for the girl
         var mat = new RD.Material({
             textures: {
@@ -230,6 +231,7 @@ export class CanvasController {
 
 
         this.character = girl;
+        */
 
         //load some animations
         const loadAnimation = (name, url) => {
@@ -274,8 +276,8 @@ export class CanvasController {
 
 
         // to check todo remove
-        this.myUser.position = [...girl_pivot.position];
-        this.myUser.target = [...girl_pivot.position];
+        //this.myUser.position = [...girl_pivot.position];
+        //this.myUser.target = [...girl_pivot.position];
 
 
         // main loop ***********************
@@ -286,9 +288,11 @@ export class CanvasController {
             gl.canvas.height = document.body.offsetHeight;
             gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
 
-            var girlpos = girl_pivot.localToGlobal([0, 40, 0]);
-            var campos = girl_pivot.localToGlobal([0,60,-70]);
-            var camtarget = girl_pivot.localToGlobal([0, 10, 70]);
+            const myNodeSceneUser = this.scene.getNodeById(this.myUser.username)
+
+            var girlpos = myNodeSceneUser.localToGlobal([0, 40, 0]);
+            var campos = myNodeSceneUser.localToGlobal([0,60,-70]);
+            var camtarget = myNodeSceneUser.localToGlobal([0, 10, 70]);
             var smoothtarget = vec3.lerp(vec3.create(), this.camera.target, camtarget, 0.1);
 
             this.camera.perspective(60, gl.canvas.width / gl.canvas.height, 0.1, 1000);
@@ -370,67 +374,47 @@ export class CanvasController {
                 moveCam = !moveCam
             }
 
+            //update users
+            for (let username in this.currentRoom?.users) {
+                var t = getTime();
+                var anim = this.animations.idle;
+                var time_factor = 1;
+    
+                const userNode = this.scene.getNodeById(username)
+                const user = this.currentRoom.users[username];
 
-            //update user
-            var t = getTime();
-            var anim = this.animations.idle;
-            var time_factor = 1;
+                //update move with mouse
+                let dist = vec3.distance([...user.position], [...user.target]);
+                let offset = 4;
 
-            //this.myUser.updatePos(dt);
-            /*
-            //control with keys
-            if (gl.keys["UP"]) {
-                girl_pivot.moveLocal([0, 0, 1]);
-                anim = this.animations.walking;
-            }
-            else if (gl.keys["DOWN"]) {
-                girl_pivot.moveLocal([0, 0, -1]);
-                anim = this.animations.walking;
-                time_factor = -1;
-            }
-            if (gl.keys["LEFT"])
-                girl_pivot.rotate(90 * DEG2RAD * dt, [0, 1, 0]);
-            else if (gl.keys["RIGHT"])
-                girl_pivot.rotate(-90 * DEG2RAD * dt, [0, 1, 0]);
-
-
-            var pos = girl_pivot.position;
-            var nearest = this.walkarea.adjustPosition(pos);
-            girl_pivot.position = nearest.position;
-            */
-
-            
-            
-            //update move with mouse
-            let dist = vec3.distance([...girl_pivot.position], [...this.myUser.target]);
-            let offset = 4;
-            //console.log(dist)
-            if(dist > offset)
-            {
-                //console.log("entered with target: " + this.myUser.target)
-                //girl_pivot.orientTo(this.myUser.target, [0,1,0])
-                girl_pivot.moveLocal([0, 0, 1]);
-                anim = this.animations.walking;
-                var pos = girl_pivot.position;
-                var nearest = this.walkarea.adjustPosition(pos);
-                this.myUser.position = girl_pivot.position = nearest.position;
-
-                if(nearest.isUpdated){
-                    this.myUser.target = [...girl_pivot.position]
+                if(dist > offset)
+                {
+                    userNode.moveLocal([0, 0, 1]);
+                    anim = this.animations.walking;
+                    var pos = userNode.position;
+                    var nearest = this.walkarea.adjustPosition(pos);
+                    userNode.position = user.position = nearest.position;
+    
+                    if(nearest.isUpdated){
+                        user.target = [...userNode.position]
+                    }
+    
+                    //console.log("girl pos: " + girl_pivot.position + " target pos: " + this.myUser.target)
+                    //console.log(dist)  
                 }
-
-                //console.log("girl pos: " + girl_pivot.position + " target pos: " + this.myUser.target)
-                //console.log(dist)  
+                else{
+                    user.target = [...userNode.position]
+                }
+    
+    
+                //move bones in the skeleton based on animation
+                anim.assignTime(t * 0.001 * time_factor);
+                //copy the skeleton in the animation to the character
+                this.character.skeleton.copyFrom(anim.skeleton);
+            
             }
-            else{
-                this.myUser.target = [...girl_pivot.position]
-            }
 
-
-            //move bones in the skeleton based on animation
-            anim.assignTime(t * 0.001 * time_factor);
-            //copy the skeleton in the animation to the character
-            this.character.skeleton.copyFrom(anim.skeleton);
+           
 
             // update tir parabolic
             const sdt = dt * 5;
@@ -460,7 +444,8 @@ export class CanvasController {
                 if( ray.testPlane( RD.ZERO, RD.UP ) ) //collision with infinite plane
                 {
                     console.log( "floor position clicked", ray.collision_point );
-                    girl_pivot.orientTo(ray.collision_point, [0,1,0])
+                    const myNodeSceneUser = this.scene.getNodeById(this.myUser.username)
+                    myNodeSceneUser.orientTo(ray.collision_point, [0,1,0])
 				    //girl_pivot.lookAt(ray.collision_point, [0,1,0])
                     this.myUser.target = [...ray.collision_point];
                     //girl_pivot.position = [...ray.collision_point];
@@ -630,9 +615,10 @@ export class CanvasController {
 
         this.camOffset = [-position[0], -position[1], 0];  // TODO update in 3D
         this.currentRoom.addUser(username, this.myUser);
-
+        this.addUserToScene(this.myUser)
         //add room to the scene
-        addCurrentRoomToScene();
+        //this.addCurrentRoomToScene();
+        //console.log(this.scene);
     };
 
     setOtherUserTarget = (srcUsername, targetPos) => {
@@ -652,11 +638,16 @@ export class CanvasController {
 
     initCurrentRoom = (roomId, users) => {
         if (roomId !== this.currentRoom.id) return;
+        
+        this.addCurrentRoomToScene();
+
         users.forEach(({ username, avatar, position }) => {
-            this.currentRoom.addUser(username, new User(username, avatar));
+            this.currentRoom.addUser(username, new User(username, avatar, 0.3));
             const user = this.currentRoom.users[username];
-            //user.setPosition(position);   TODO
+            user.setPosition(position);   //TODO check
+            this.addUserToScene(user)
         })
+
     }
 
     addCurrentRoomToScene = () => {
@@ -673,6 +664,45 @@ export class CanvasController {
         const walkarea = this.currentRoom.walkarea
         this.walkarea = new WalkArea();
         this.walkarea.addRect([-Math.round(walkarea[0]/2),0,-Math.round(walkarea[1]/2)], walkarea[0], walkarea[1]);
+    }
 
+    addUserToScene = (user) => {
+         //create material for the girl
+        var mat = new RD.Material({
+            textures: {
+                color: "girl/girl.png"
+            }
+        });
+        mat.register("girl");
+
+        //create pivot point for the girl
+        var girl_pivot = new RD.SceneNode({
+            position: [-40, 0, -40],
+            id: user.username
+        });
+
+        //create a mesh for the girl
+        var girl = new RD.SceneNode({
+            scaling: this.myUser.avatar_scale,
+            mesh: this.myUser.avatar + "/" + this.myUser.avatar + ".wbin",
+            material: "girl"
+        });
+
+        girl_pivot.addChild(girl);
+        girl.skeleton = new RD.Skeleton();
+        this.scene.root.addChild(girl_pivot);
+
+        var girl_selector = new RD.SceneNode({
+            position: [0, 20, 0],
+            mesh: "cube",
+            material: "girl",
+            scaling: [8, 20, 8],
+            name: "girl_selector",
+            layers: 0b1000
+        });
+        
+        girl_pivot.addChild(girl_selector);
+
+        this.character = girl;
     }
 }
