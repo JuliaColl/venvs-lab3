@@ -9,12 +9,14 @@ import { Message } from "../../../models/Message.js";
 import { LeaveRoomOverlayView } from "./LeaveRoomOverlayView.js";
 import { ExperimentParamsController } from "../experimentParams/ExperimentParamsController.js";
 
+var moveCam = false;
+
 export class CanvasController {
     messageInputOverlayController = null;
     chatOverlayController = null;
     audioOverlayController = null;
 
-    mousePosition = [0, 0];
+    //mousePosition = [0, 0];
     //camOffset = [0, 0];
     currentRoom = null;
     myUser = null;
@@ -121,7 +123,7 @@ export class CanvasController {
 
     onLogin = ({ username, avatar }, token) => {
         
-        //this.myUser = new User(username, avatar);   //TODO set avatar and avatar_scale from backend
+        //this.myUser = new User(username, avatar, avatar_scale);   //TODO set avatar and avatar_scale from backend
         this.myUser = new User(username, "girl", 0.3);  
 
         autoReconnect(() => {
@@ -201,7 +203,7 @@ export class CanvasController {
 
         //create pivot point for the girl
         var girl_pivot = new RD.SceneNode({
-            position: [-40, 0, 0]
+            position: [-40, 0, -40]
         });
 
         //create a mesh for the girl
@@ -247,9 +249,10 @@ export class CanvasController {
         var gizmo = new RD.Gizmo();
         gizmo.mode = RD.Gizmo.ALL;
 
+        /*
         // create floor
         var floor = new RD.SceneNode({
-            position: [-50,0,0],
+            position: [0,0,0],
             scaling: 400,
             color: [0.95,0.95,0.95,1],
             mesh: "planeXZ",
@@ -257,7 +260,8 @@ export class CanvasController {
         this.scene.root.addChild( floor );
 
         this.walkarea = new WalkArea();
-        this.walkarea.addRect([-250,0,-200], 400, 400);
+        this.walkarea.addRect([-200,0,-200], 400, 400);
+        */
 
         //create sphere
         var box = new RD.SceneNode();
@@ -288,7 +292,11 @@ export class CanvasController {
             var smoothtarget = vec3.lerp(vec3.create(), this.camera.target, camtarget, 0.1);
 
             this.camera.perspective(60, gl.canvas.width / gl.canvas.height, 0.1, 1000);
-            this.camera.lookAt(campos, smoothtarget, [0, 1, 0]);
+            if (moveCam){
+                this.camera.lookAt(this.camera.position, this.camera.target, [0, 1, 0]);
+            }else{
+                this.camera.lookAt([0,65,0], girlpos, [0, 1, 0]);
+            }
 
             //clear
             this.renderer.clear(bg_color);
@@ -296,10 +304,10 @@ export class CanvasController {
             this.renderer.render(this.scene, this.camera, null, 0b11);
 
             /*
-            var vertices = this.walkarea.getVertices();
+            var vertices = this.walkarea?.getVertices();
             this.renderer.renderPoints(vertices, null, this.camera, null, null, null, gl.LINES);
             */
-           
+
             //gizmo.setTargets([monkey]);
             //this.renderer.render( this.scene, this.camera, [gizmo] ); //render gizmo on top
 
@@ -356,12 +364,20 @@ export class CanvasController {
         context.onupdate = (dt) => {
             //not necessary but just in case...
             this.scene.update(dt);
+            
+            // to change the camera mode
+            if (gl.keys["C"]) {
+                moveCam = !moveCam
+            }
 
+
+            //update user
             var t = getTime();
             var anim = this.animations.idle;
             var time_factor = 1;
 
-            
+            //this.myUser.updatePos(dt);
+            /*
             //control with keys
             if (gl.keys["UP"]) {
                 girl_pivot.moveLocal([0, 0, 1]);
@@ -381,8 +397,9 @@ export class CanvasController {
             var pos = girl_pivot.position;
             var nearest = this.walkarea.adjustPosition(pos);
             girl_pivot.position = nearest.position;
-            
+            */
 
+            
             
             //update move with mouse
             let dist = vec3.distance([...girl_pivot.position], [...this.myUser.target]);
@@ -396,7 +413,7 @@ export class CanvasController {
                 anim = this.animations.walking;
                 var pos = girl_pivot.position;
                 var nearest = this.walkarea.adjustPosition(pos);
-                girl_pivot.position = nearest.position;
+                this.myUser.position = girl_pivot.position = nearest.position;
 
                 if(nearest.isUpdated){
                     this.myUser.target = [...girl_pivot.position]
@@ -408,6 +425,7 @@ export class CanvasController {
             else{
                 this.myUser.target = [...girl_pivot.position]
             }
+
 
             //move bones in the skeleton based on animation
             anim.assignTime(t * 0.001 * time_factor);
@@ -453,7 +471,7 @@ export class CanvasController {
         context.onmousemove = (e) => {
             if (e.dragging) {
                 //orbit camera around
-                //this.camera.orbit( e.deltax * -0.01, RD.UP );
+                this.camera.orbit( e.deltax * -0.01, RD.UP );
                 //this.camera.position = vec3.scaleAndAdd( this.camera.position, this.camera.position, RD.UP, e.deltay );
                 this.camera.move([-e.deltax * 0.1, e.deltay * 0.1, 0]);
                 //girl_pivot.rotate(e.deltax*-0.003,[0,1,0]);
@@ -612,6 +630,9 @@ export class CanvasController {
 
         this.camOffset = [-position[0], -position[1], 0];  // TODO update in 3D
         this.currentRoom.addUser(username, this.myUser);
+
+        //add room to the scene
+        addCurrentRoomToScene();
     };
 
     setOtherUserTarget = (srcUsername, targetPos) => {
@@ -636,5 +657,22 @@ export class CanvasController {
             const user = this.currentRoom.users[username];
             //user.setPosition(position);   TODO
         })
+    }
+
+    addCurrentRoomToScene = () => {
+        // create floor
+        const floor = new RD.SceneNode({
+            position: [0,0,0],
+            scaling: this.currentRoom.scale,
+            color: [0.95,0.95,0.95,1],
+            mesh: "planeXZ",
+        });
+
+        this.scene.root.addChild( floor );
+        
+        const walkarea = this.currentRoom.walkarea
+        this.walkarea = new WalkArea();
+        this.walkarea.addRect([-Math.round(walkarea[0]/2),0,-Math.round(walkarea[1]/2)], walkarea[0], walkarea[1]);
+
     }
 }

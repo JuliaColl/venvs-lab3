@@ -2,127 +2,15 @@
     {
         "id": 0,
         "name": "lobby",
-        "walkableSize": [630, 260],
-        "center": [12, 20],
-        "url": "/data/images/rooms/lobby.png",
+        "walkarea": [400, 400],
+        "scale": 400, 
         "exits": [
             {
                "position": [12, -102],
                "size": [146, 20],
                "toRoomId": 3,
                "spawnPos": [34, 90]
-            },
-            {
-                "position": [-300, 125],
-                "size": [20, 100],
-                "toRoomId": 2,
-                "spawnPos": [105, 120]
-             }
+            }
          ]
-    },
-    {
-        "id": 1,
-        "name": "livingroom",
-        "walkableSize": [580, 300],
-        "center": [0, 26],
-        "url": "/data/images/rooms/livingroom.png",
-        "exits": [
-            {
-                "position": [0, 170],
-                "size": [100, 20],
-                "toRoomId": 3,
-                "spawnPos": [-387, -75]
-             }
-        ]
-    },
-    {
-        "id": 2,
-        "name": "bedroom",
-        "walkableSize": [312, 260],
-        "center": [-17, 18],
-        "url": "/data/images/rooms/bedroom.png",
-        "exits": [
-            {
-                "position": [-80, -110],
-                "size": [100, 20],
-                "toRoomId": 3,
-                "spawnPos": [-570, 80]
-             },
-             {
-                 "position": [135, 120],
-                 "size": [20, 100],
-                 "toRoomId": 0,
-                 "spawnPos": [-275, 125]
-              }
-        ]
-    },
-    {
-        "id": 3,
-        "name": "corridor",
-        "walkableSize": [1346, 220],
-        "center": [0, 0],
-        "url": "/data/images/rooms/corridor.png",
-        "exits": [
-            {
-                "position": [35, 110],
-                "size": [146, 20],
-                "toRoomId": 0,
-                "spawnPos": [11, -80]
-             },
-             {
-                "position": [-570, 110],
-                "size": [100, 20],
-                "toRoomId": 2,
-                "spawnPos": [-77, -62]
-             },
-             {
-                "position": [-387, -102],
-                "size": [100, 20],
-                "toRoomId": 1,
-                "spawnPos": [5, 155]
-             },
-             {
-                "position": [96, -102],
-                "size": [100, 20],
-                "toRoomId": 4,
-                "spawnPos": [-220, 148]
-             },
-             {
-                "position": [534, 110],
-                "size": [100, 20],
-                "toRoomId": 5,
-                "spawnPos": [-12, -67]
-             }
-        ]
-    },
-    {
-        "id": 4,
-        "name": "kitchen",
-        "walkableSize": [696, 304],
-        "center": [0, 25],
-        "url": "/data/images/rooms/kitchen.png",
-        "exits": [
-            {
-                "position": [-224, 172],
-                "size": [100, 20],
-                "toRoomId": 3,
-                "spawnPos": [90, -55]
-             }
-        ]
-    },
-    {
-        "id": 5,
-        "name": "sexroom",
-        "walkableSize": [266, 256],
-        "center": [-2, 15],
-        "url": "/data/images/rooms/sexroom.png",
-        "exits": [
-            {
-                "position": [-16, -107],
-                "size": [100, 20],
-                "toRoomId": 3,
-                "spawnPos": [530, 90]
-             }
-        ]
     }
 ]

@@ -10,8 +10,8 @@ export class User {
     avatar = "girl";
     avatar_scale = 0.3;
 
-    facing = FACING.FACING_FRONT;
-    animation = 'idle';
+    // = FACING.FACING_FRONT;
+    //animation = 'idle';
 
     currentRoom = null;
 
@@ -41,28 +41,54 @@ export class User {
     }
 
     updatePos(dt) {
-        const diffX = this.target[0] - this.position[0];
-        const diffY = this.target[1] - this.position[1];
-        const maxDelta = 100;
-        const offset = 5
+        /*
+            //control with keys
+            if (gl.keys["UP"]) {
+                girl_pivot.moveLocal([0, 0, 1]);
+                anim = this.animations.walking;
+            }
+            else if (gl.keys["DOWN"]) {
+                girl_pivot.moveLocal([0, 0, -1]);
+                anim = this.animations.walking;
+                time_factor = -1;
+            }
+            if (gl.keys["LEFT"])
+                girl_pivot.rotate(90 * DEG2RAD * dt, [0, 1, 0]);
+            else if (gl.keys["RIGHT"])
+                girl_pivot.rotate(-90 * DEG2RAD * dt, [0, 1, 0]);
 
-        const deltaX = diffX > 0? maxDelta: diffX < 0? -maxDelta: 0;
-        const deltaY = diffY > 0? maxDelta: diffY < 0? -maxDelta: 0;
 
-        if (Math.abs(diffX) < offset) {
-            this.position[0] = this.target[0];
-        } else {
-            this.position[0] += deltaX * dt;
-        }
-        
-        if (Math.abs(diffY) < offset) {
-            this.position[1] = this.target[1];
-        } else {
-            this.position[1] += deltaY * dt;
-        }
+            var pos = girl_pivot.position;
+            var nearest = this.walkarea.adjustPosition(pos);
+            girl_pivot.position = nearest.position;
+            */
 
-        this.updateAnimation(deltaX, deltaY);
+            
+            
+            //update move with mouse
+            let dist = vec3.distance([...this.position], [...this.target]);
+            let offset = 4;
+            //console.log(dist)
+            if(dist > offset)
+            {
+                //console.log("entered with target: " + this.myUser.target)
+                //girl_pivot.orientTo(this.myUser.target, [0,1,0])
+                girl_pivot.moveLocal([0, 0, 1]);
+                anim = this.animations.walking;
+                var pos = girl_pivot.position;
+                var nearest = this.walkarea.adjustPosition(pos);
+                girl_pivot.position = nearest.position;
 
+                if(nearest.isUpdated){
+                    this.myUser.target = [...girl_pivot.position]
+                }
+
+                //console.log("girl pos: " + girl_pivot.position + " target pos: " + this.myUser.target)
+                //console.log(dist)  
+            }
+            else{
+                this.myUser.target = [...girl_pivot.position]
+            }
         
     }
 

@@ -4,18 +4,18 @@ export class Room {
     id = -1;
     name = null;
     users = {};
-    walkableSize = null;
-    center = [0,0];
-    url = null;
+    walkarea = [0,0];
+    //floor = null;
+    scale = 0;
+    //url = null;
     exits = [];
 
-    constructor({id, name, walkableSize, center, url, exits}) {
+    constructor({id, name, scale, walkarea, exits}) {
         this.id = id;
         this.name = name;
-        this.walkableSize = walkableSize;
-        this.center = center;
-        this.url = url;
         this.exits = exits;
+        this.scale = scale
+        this.walkarea = walkarea
     }
 
     addUser(id, user) {
