@@ -8,6 +8,7 @@ import { WsClient } from "../../../clients/wsClient.js";
 import { Message } from "../../../models/Message.js";
 import { LeaveRoomOverlayView } from "./LeaveRoomOverlayView.js";
 import { ExperimentParamsController } from "../experimentParams/ExperimentParamsController.js";
+import { world } from './world.js';
 
 var moveCam = true;
 var isDemo = false; //TODO put it nice
@@ -464,8 +465,7 @@ export class CanvasController {
 
     _initRooms = async () => {
         // create the rooms
-        const rooms = (await fetch(STATIC_FILE_URI + "data/world.json").then(r => r.json())).map(room => new Room(room))
-        rooms.forEach((room) => { this.rooms[room.id] = room; });
+        world.map(room => new Room(room)).forEach((room) => { this.rooms[room.id] = room; });
     };
 
     onMouse = (e) => {

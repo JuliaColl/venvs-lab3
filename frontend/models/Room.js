@@ -20,49 +20,9 @@ export class Room {
         this.demo = demo;
 
         
-        var funcBodyUpdate = demo.dynamic_object.update.match(/function[^{]+\{([\s\S]*)\}$/)[1];
-        demo.dynamic_object.update = new Function(['dt'], funcBodyUpdate);
-
-        var funcBodyRestart = demo.dynamic_object.restart.match(/function[^{]+\{([\s\S]*)\}$/)[1];
-        demo.dynamic_object.restart = new Function([], funcBodyRestart);
-        
-        var funcBodysetParams = demo.dynamic_object.setParams.match(/function[^{]+\{([\s\S]*)\}$/)[1];
-        demo.dynamic_object.setParams = new Function(['params'], funcBodysetParams);
-        
-        
-
-
-        /*
-        this.demo.dynamic_object.update = function (dt){
-            const sdt = dt * 5;
-            this.node.position[0] = this.node.position[0] + this.velocity[0] * sdt;
-            this.node.position[1] = this.node.position[1] + this.velocity[1] * sdt + 1 / 2 * this.params.a.value * sdt * sdt;
-            this.node.position[2] = this.node.position[2] + this.velocity[2] * sdt;
-            this.velocity[1] = this.velocity[1] + this.params.a.value * sdt;
-            this.node.position = [...this.node.position];
-
-            if (this.node.position[1] < -10){
-                this.restart()
-            }
-
-            return this.node.position;
-        }
-        
-
-        
-        this.demo.dynamic_object.restart = function (){
-                this.node.position = [...this.position];
-                this.velocity = [this.params.v0.value*Math.cos(this.params.alpha), this.params.v0.value*Math.sin(this.params.alpha), 0];
-        }
-        
-
-        this.demo.dynamic_object.setParams = function (params){
-            this.params.a.value = params.a;
-            this.params.v0.value = params.v0;
-            this.params.alpha = params.alpha;
-            this.restart();
-        }
-        */
+        demo.dynamic_object.update = demo.dynamic_object.update;
+        demo.dynamic_object.restart = demo.dynamic_object.restart;
+        demo.dynamic_object.setParams = demo.dynamic_object.setParams;
     }
 
     addUser(id, user) {
