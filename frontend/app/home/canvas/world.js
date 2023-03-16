@@ -1,14 +1,60 @@
 export const world = [
     {
         id: 0,
+        name: "Lobby",
+        walkarea: [400, 400],
+        scale: 400, 
+        exits: [
+            {
+               position: [-200, 0],
+               size: [146, 20],
+               toRoomId: 1,
+               spawnPos: [34, 90],
+            }
+         ],
+
+        demo: 
+            {
+                materials : [
+                    {
+                        path:"assets/green.png",
+                        name: "green_door"
+                    }
+                ],
+
+
+                static_objects : [
+                    {
+                        position: [140, 10, 120],
+                        mesh: "cube",
+                        color: [0, 1, 0, 1],
+                        scaling: [10, 10, 10],
+                        name: "parabolic"
+                    },
+                    {
+                        scaling: 50,
+                        mesh: "assets/door.obj",
+                        material: "green_door",
+                        position: [-200, 0, 0],
+                        rotation: 90
+                    }
+                ], 
+                
+                dynamic_object : {}
+                    
+            }
+    },
+
+    {
+        id: 1,
         name: "Projectile motion",
         walkarea: [400, 400],
         scale: 400, 
         exits: [
             {
-               position: [12, -102],
+               position: [-200, 0],
                size: [146, 20],
-               toRoomId: 3,
+               toRoomId: 0,
                spawnPos: [34, 90],
             }
          ],

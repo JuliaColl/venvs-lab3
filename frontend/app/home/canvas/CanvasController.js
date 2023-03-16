@@ -65,7 +65,7 @@ export class CanvasController {
         }
 
         this._experimentParamsController = new ExperimentParamsController();
-        
+
         this._canvasView = new CanvasView();
         this._canvasView.onMouse = this.onMouse;
         this._initRooms();
@@ -218,7 +218,7 @@ export class CanvasController {
         //door.setEulerRotation(0.2, RD.UP);
         this.scene.root.addChild(door);
         */
-       
+
         // main loop ***********************
 
         //main draw function
@@ -361,16 +361,16 @@ export class CanvasController {
             box.position = [...box.position];
             */
 
-            if (isDemo) {   
+            if (isDemo) {
                 const dynamic_object = this.currentRoom.demo.dynamic_object;
                 const node = this.scene.getNodeById(dynamic_object.node.id);
                 node.position = dynamic_object.update(dt);
             }
 
-            if(gl.keys["ENTER"]){  // TODO submit button
+            if (gl.keys["ENTER"]) {  // TODO submit button
                 isDemo = !isDemo
 
-                
+
                 const values = this._experimentParamsController.getValues()
                 const dynamic_object = this.currentRoom.demo.dynamic_object;
                 dynamic_object.setParams(values);
@@ -384,7 +384,18 @@ export class CanvasController {
 
                 } 
                 */
+
             }
+
+             // check exit
+             const exit = this.currentRoom.getExit(this.myUser.getPosition());
+             if (!exit) {
+                 this._leaveRoomOverlayView.hide();
+                 this._hasLeaveRoomDialogBeenDismissed = false;
+                 return;
+             };
+             if (this._hasLeaveRoomDialogBeenDismissed) return;
+             this._leaveRoomOverlayView.show();
         }
 
         //user input ***********************
@@ -609,7 +620,7 @@ export class CanvasController {
         // create demo
         const demo = this.currentRoom.demo;
 
-        demo.materials.forEach( ({path, name}) => {
+        demo.materials.forEach(({ path, name }) => {
             var mat = new RD.Material({
                 textures: {
                     color: path
@@ -622,10 +633,10 @@ export class CanvasController {
         var dynamic_object = new RD.SceneNode(demo.dynamic_object.node);
         this.scene.root.addChild(dynamic_object);
 
-        demo.static_objects.forEach( ({rotation, ...node}) => {
+        demo.static_objects.forEach(({ rotation, ...node }) => {
             var static_object = new RD.SceneNode(node);
-            if(rotation){
-                static_object.rotate(rotation*DEG2RAD, RD.UP)
+            if (rotation) {
+                static_object.rotate(rotation * DEG2RAD, RD.UP)
             }
             this.scene.root.addChild(static_object);
         })
