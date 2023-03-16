@@ -11,7 +11,6 @@ import { ExperimentParamsController } from "../experimentParams/ExperimentParams
 import { world } from './world.js';
 
 var moveCam = true;
-var isDemo = false; //TODO put it nice
 
 export class CanvasController {
     messageInputOverlayController = null;
@@ -80,7 +79,17 @@ export class CanvasController {
             }
         });
 
-
+        document.addEventListener('keydown', (e) => {
+            if (e.code === "Space") {
+                if(this._experimentParamsController.isValid()){
+                    const values = this._experimentParamsController.getValues()
+                    const dynamic_object = this.currentRoom.demo.dynamic_object;
+                    dynamic_object.setParams(values);
+                    dynamic_object.reset()
+                    dynamic_object.start()
+                }
+            }
+        });
 
     };
 
@@ -208,18 +217,21 @@ export class CanvasController {
             gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
 
             const myNodeSceneUser = this.scene.getNodeById(this.myUser.username)
+            if (myNodeSceneUser){
+                var girlpos = myNodeSceneUser.localToGlobal([0, 40, 0]);
+                var campos = myNodeSceneUser.localToGlobal([0, 60, -70]);
+                var camtarget = myNodeSceneUser.localToGlobal([0, 10, 70]);
+                var smoothtarget = vec3.lerp(vec3.create(), this.camera.target, camtarget, 0.1);
 
-            var girlpos = myNodeSceneUser.localToGlobal([0, 40, 0]);
-            var campos = myNodeSceneUser.localToGlobal([0, 60, -70]);
-            var camtarget = myNodeSceneUser.localToGlobal([0, 10, 70]);
-            var smoothtarget = vec3.lerp(vec3.create(), this.camera.target, camtarget, 0.1);
-
-            this.camera.perspective(60, gl.canvas.width / gl.canvas.height, 0.1, 1000);
-            if (moveCam) {
-                this.camera.lookAt(this.camera.position, this.camera.target, [0, 1, 0]);
-            } else {
-                this.camera.lookAt([0, 65, 0], girlpos, [0, 1, 0]);
+                this.camera.perspective(60, gl.canvas.width / gl.canvas.height, 0.1, 1000);
+                if (moveCam) {
+                    this.camera.lookAt(this.camera.position, this.camera.target, [0, 1, 0]);
+                } else {
+                    this.camera.lookAt([0, 65, 0], girlpos, [0, 1, 0]);
+                }
             }
+            
+            
 
             //clear
             this.renderer.clear(bg_color);
@@ -341,29 +353,13 @@ export class CanvasController {
             box.position = [...box.position];
             */
 
-            if (isDemo) {   
+            if (this.currentRoom && this.currentRoom.demo){
                 const dynamic_object = this.currentRoom.demo.dynamic_object;
-                const node = this.scene.getNodeById(dynamic_object.node.id);
-                node.position = dynamic_object.update(dt);
-            }
-
-            if(gl.keys["ENTER"]){  // TODO submit button
-                isDemo = !isDemo
-
+                if (dynamic_object.running){
+                    const node = this.scene.getNodeById(dynamic_object.node.id);
+                    node.position = dynamic_object.update(dt);
+                }
                 
-                const values = this._experimentParamsController.getValues()
-                const dynamic_object = this.currentRoom.demo.dynamic_object;
-                dynamic_object.setParams(values);
-
-
-                /* TODO add this 
-                if(this._experimentParamsController.isValid()){
-                    const values = this._experimentParamsController.getValues()
-                    const dynamic_object = this.currentRoom.demo.dynamic_object;
-                    dynamic_object.setParams(values);
-
-                } 
-                */
             }
         }
 
@@ -387,7 +383,10 @@ export class CanvasController {
                     console.log("floor position clicked", ray.collision_point);
                     // update target position of my user
                     const myNodeSceneUser = this.scene.getNodeById(this.myUser.username)
-                    myNodeSceneUser.orientTo(ray.collision_point, [0, 1, 0])
+                    if (myNodeSceneUser){
+                        myNodeSceneUser.orientTo(ray.collision_point, [0, 1, 0])
+                    }
+                    
                     this.myUser.set3DTarget(ray.collision_point)
 
                     //send new target to other users in the room
