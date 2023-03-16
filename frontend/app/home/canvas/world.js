@@ -9,12 +9,20 @@ export const world = [
                position: [12, -102],
                size: [146, 20],
                toRoomId: 3,
-               spawnPos: [34, 90]
+               spawnPos: [34, 90],
             }
          ],
 
         demo: 
             {
+                materials : [
+                    {
+                        path:"assets/green.png",
+                        name: "green_door"
+                    }
+                ],
+
+
                 static_objects : [
                     {
                         position: [140, 10, 120],
@@ -22,6 +30,13 @@ export const world = [
                         color: [0, 1, 0, 1],
                         scaling: [10, 10, 10],
                         name: "parabolic"
+                    },
+                    {
+                        scaling: 50,
+                        mesh: "assets/door.obj",
+                        material: "green_door",
+                        position: [-200, 0, 0],
+                        rotation: 90
                     }
                 ], 
                 

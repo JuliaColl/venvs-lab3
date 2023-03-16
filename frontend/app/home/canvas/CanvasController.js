@@ -207,7 +207,27 @@ export class CanvasController {
         //box.shader = "phong";
         this.scene.root.addChild(box);
         */
+        /*
+        // load door
+         //create material for the girl
+         var mat = new RD.Material({
+            textures: {
+                color: "assets/green.png"
+            }
+        });
+        mat.register("green_door");
 
+        var door = new RD.SceneNode({
+            scaling: 50,
+            mesh: "assets/door.obj",
+            material: "green_door",
+            position: [-200, 0, 0],
+        });
+        door.rotate(90*DEG2RAD, RD.UP)
+        //door.setEulerRotation(0.2, RD.UP);
+        this.scene.root.addChild(door);
+        */
+       
         // main loop ***********************
 
         //main draw function
@@ -227,7 +247,7 @@ export class CanvasController {
                 if (moveCam) {
                     this.camera.lookAt(this.camera.position, this.camera.target, [0, 1, 0]);
                 } else {
-                    this.camera.lookAt([0, 65, 0], girlpos, [0, 1, 0]);
+                    this.camera.lookAt([0, 70, 100], girlpos, [0, 1, 0]);
                 }
             }
             
@@ -587,12 +607,26 @@ export class CanvasController {
 
         // create demo
         const demo = this.currentRoom.demo;
+
+        demo.materials.forEach( ({path, name}) => {
+            var mat = new RD.Material({
+                textures: {
+                    color: path
+                }
+            });
+            mat.register(name);
+
+        })
+
         var dynamic_object = new RD.SceneNode(demo.dynamic_object.node);
         this.scene.root.addChild(dynamic_object);
 
-        demo.static_objects.forEach( (node) => {
-            var static_objects = new RD.SceneNode(node);
-            this.scene.root.addChild(static_objects);
+        demo.static_objects.forEach( ({rotation, ...node}) => {
+            var static_object = new RD.SceneNode(node);
+            if(rotation){
+                static_object.rotate(rotation*DEG2RAD, RD.UP)
+            }
+            this.scene.root.addChild(static_object);
         })
 
     }
