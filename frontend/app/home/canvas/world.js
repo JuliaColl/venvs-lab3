@@ -65,6 +65,10 @@ export const world = [
                     {
                         path:"assets/green.png",
                         name: "green_door"
+                    },
+                    {
+                        path:"assets/parabolic-blackboard.png",
+                        name: "parabolic-blackboard"
                     }
                 ],
 
@@ -83,6 +87,12 @@ export const world = [
                         material: "green_door",
                         position: [-202, 0, 0],
                         rotation: 90
+                    },
+                    {
+                        scaling: 0.75,
+                        mesh: "assets/blackboard3.obj",
+                        material: "parabolic-blackboard",
+                        position: [0, 25, -250]
                     }
                 ], 
                 
