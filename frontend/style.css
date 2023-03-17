@@ -346,7 +346,11 @@ a.link:hover{
     margin: 20px;
 }
 
-#changeRoomOverlay button {
+#runContainer {
+    margin: 0px 20px 20px 20px;
+}
+
+button {
   border-radius: 8px;
   border-style: none;
   box-sizing: border-box;
@@ -373,21 +377,19 @@ a.link:hover{
 }
 
 
-#changeRoomOverlay button.yes {
+button.yes {
     background-color: var(--primary-color);
 }
 
-#changeRoomOverlay button.yes:hover,
-#changeRoomOverlay button.yes:focus {
+button.yes:hover {
   background-color: var(--primary-color-darker);
 }
 
-#changeRoomOverlay button.no {
+button.no {
     background-color: var(--error-color);
 }
 
-#changeRoomOverlay button.no:hover,
-#changeRoomOverlay button.no:focus {
+button.no:hover {
   background-color: var(--error-color-darker);
 }
 
@@ -413,6 +415,6 @@ a.link:hover{
     pointer-events: auto;
 }
 
-canvas, #inputOverlay, #chatOverlay, #changeRoomOverlay, #params {
+canvas, #inputOverlay, #chatOverlay, #changeRoomOverlay, #params, #run {
     display: none;
 }

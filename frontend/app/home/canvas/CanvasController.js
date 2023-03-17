@@ -9,16 +9,15 @@ import { Message } from "../../../models/Message.js";
 import { LeaveRoomOverlayView } from "./LeaveRoomOverlayView.js";
 import { ExperimentParamsController } from "../experimentParams/ExperimentParamsController.js";
 import { world } from './world.js';
+import { RunExperimentOverlayView } from "./runExperimentOverlayView.js";
 
-var moveCam = false;
+var moveCam = false;  // todo clean
 
 export class CanvasController {
     messageInputOverlayController = null;
     chatOverlayController = null;
     audioOverlayController = null;
 
-    //mousePosition = [0, 0];
-    //camOffset = [0, 0];
     currentRoom = null;
     myUser = null;
 
@@ -30,10 +29,7 @@ export class CanvasController {
     scene = null;
     renderer = null;
     camera = null;
-    //character = null;
-
     animations = {};
-    //animation = null;
 
     walkarea = null;
 
@@ -77,6 +73,18 @@ export class CanvasController {
         this._canvasView.onMouse = this.onMouse;
         this._initRooms();
 
+        this._runView = new RunExperimentOverlayView();
+        this._runView.onRun = () => {
+            console.log("run")
+            if(this._experimentParamsController.isValid()){
+                const values = this._experimentParamsController.getValues()
+                const dynamic_object = this.currentRoom.demo.dynamic_object;
+                dynamic_object.setParams(values);
+                dynamic_object.reset()
+                dynamic_object.start()
+            }
+        }
+
         document.addEventListener("visibilitychange", () => {
             if (document.visibilityState === 'visible') {
                 if (!this.currentRoom) return;
@@ -86,29 +94,18 @@ export class CanvasController {
                 }
             }
         });
-
-        document.addEventListener('keydown', (e) => {
-            if (e.code === "Space") {
-                if(this._experimentParamsController.isValid()){
-                    const values = this._experimentParamsController.getValues()
-                    const dynamic_object = this.currentRoom.demo.dynamic_object;
-                    dynamic_object.setParams(values);
-                    dynamic_object.reset()
-                    dynamic_object.start()
-                }
-            }
-        });
-
     };
 
     show = () => {
         this._canvasView.show();
         this._experimentParamsController.show();
+        this._runView.show();
     }
     hide = () => {
         this._canvasView.hide();
         this._leaveRoomOverlayView.hide();
         this._experimentParamsController.hide();
+        this._runView.hide();
     }
 
     useSsao = false;
