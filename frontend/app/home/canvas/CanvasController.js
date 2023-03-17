@@ -10,7 +10,7 @@ import { LeaveRoomOverlayView } from "./LeaveRoomOverlayView.js";
 import { ExperimentParamsController } from "../experimentParams/ExperimentParamsController.js";
 import { world } from './world.js';
 
-var moveCam = true;
+var moveCam = false;
 
 export class CanvasController {
     messageInputOverlayController = null;
@@ -48,10 +48,16 @@ export class CanvasController {
             }
 
             this._hasLeaveRoomDialogBeenDismissed = false;
+
+            this.scene.clear();
+            this._experimentParamsController.clearParams();
+
             this.myUser.currentRoom = exit.toRoomId;
             this.currentRoom = this.rooms[exit.toRoomId];
             this.currentRoom.removeAllUsers();
             this.currentRoom.addUser(this.myUser.username, this.myUser);
+            this.addUserToScene(this.myUser);
+
             this._ws.joinRoom(exit.toRoomId, exit.spawnPos);
             this.myUser.setPosition(exit.spawnPos);
 
@@ -190,10 +196,10 @@ export class CanvasController {
         room.loadGLTF("data/room.gltf");
         this.scene.root.addChild(room);
         */
-
+        /*
         var gizmo = new RD.Gizmo();
         gizmo.mode = RD.Gizmo.ALL;
-
+        */
         /*
         //create sphere
         var box = new RD.SceneNode({
@@ -310,8 +316,6 @@ export class CanvasController {
 
         }
 
-        const vel0 = [-20, 30, 1]
-        const a = -10;
         //main update
         context.onupdate = (dt) => {
             //not necessary but just in case...
@@ -330,6 +334,11 @@ export class CanvasController {
 
                 const userNode = this.scene.getNodeById(username)
                 const user = this.currentRoom.users[username];
+
+                if(!userNode){
+                    console.log(`user @${username} is not added to the scene!!!`)
+                    continue;
+                }
 
                 //update move with mouse
                 let dist = vec3.distance([...user.get3DPosition()], [...user.get3DTarget()]);
@@ -362,16 +371,6 @@ export class CanvasController {
 
             }
 
-
-            /*
-            // update tir parabolic
-            const sdt = dt * 5;
-            box.position[0] = box.position[0] + vel0[0] * sdt;
-            box.position[1] = box.position[1] + vel0[1] * sdt + 1 / 2 * a * sdt * sdt;
-            box.position[2] = box.position[2] + vel0[2] * sdt;
-            vel0[1] = vel0[1] + a * sdt;
-            box.position = [...box.position];
-            */
 
             if (this.currentRoom && this.currentRoom.demo){
                 const dynamic_object = this.currentRoom.demo.dynamic_object;
@@ -558,7 +557,12 @@ export class CanvasController {
     };
 
 
-    onUserLeftRoom = (username) => this.currentRoom.removeUser(username);
+    onUserLeftRoom = ((username) => {
+        this.currentRoom.removeUser(username);
+
+        const userNode = this.scene.getNodeById(username);
+        userNode.remove();
+    });
 
     onUserJoinedRoom = (roomId, username, avatar, position) => {
         const newUser = new User(username, avatar);
@@ -681,4 +685,5 @@ export class CanvasController {
 
         this.character = girl;  //TODO animation
     }
+
 }

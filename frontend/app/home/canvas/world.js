@@ -2,7 +2,7 @@ export const world = [
     {
         id: 0,
         name: "Lobby",
-        walkarea: [400, 400],
+        walkarea: [390, 390],
         scale: 400, 
         exits: [
             {
@@ -35,7 +35,7 @@ export const world = [
                         scaling: 50,
                         mesh: "assets/door.obj",
                         material: "green_door",
-                        position: [-200, 0, 0],
+                        position: [-202, 0, 0],
                         rotation: 90
                     }
                 ], 
