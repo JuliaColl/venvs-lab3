@@ -20,7 +20,7 @@ export class User {
     constructor(username, avatar, avatar_scale) {
         this.username = username;
         this.avatar = avatar;
-        this.avatar_scale = avatar_scale;
+        //this.avatar_scale = avatar_scale;
     }
     
     setTarget(position){

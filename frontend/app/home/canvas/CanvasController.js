@@ -30,7 +30,7 @@ export class CanvasController {
     scene = null;
     renderer = null;
     camera = null;
-    character = null;
+    //character = null;
 
     animations = {};
     //animation = null;
@@ -329,11 +329,12 @@ export class CanvasController {
             //update users
             for (let username in this.currentRoom?.users) {
                 var t = getTime();
-                var anim = this.animations.idle;
                 var time_factor = 1;
 
                 const userNode = this.scene.getNodeById(username)
                 const user = this.currentRoom.users[username];
+
+                var anim = this.animations.idle;
 
                 if(!userNode){
                     console.log(`user @${username} is not added to the scene!!!`)
@@ -346,7 +347,7 @@ export class CanvasController {
 
                 if (dist > offset) {
                     userNode.moveLocal([0, 0, 1]);
-                    //anim = this.animations.walking;
+                    anim = this.animations.walking;
                     var pos = userNode.position;
                     var nearest = this.walkarea.adjustPosition(pos);
                     userNode.position = nearest.position;
@@ -367,7 +368,8 @@ export class CanvasController {
                 //move bones in the skeleton based on animation
                 anim.assignTime(t * 0.001 * time_factor);
                 //copy the skeleton in the animation to the character
-                this.character.skeleton.copyFrom(anim.skeleton);
+                var character =  this.scene.getNodeById(user.username + "_character")
+                character.skeleton.copyFrom(anim.skeleton);
 
             }
 
@@ -565,7 +567,7 @@ export class CanvasController {
     });
 
     onUserJoinedRoom = (roomId, username, avatar, position) => {
-        const newUser = new User(username, avatar);
+        const newUser = new User(username, "girl", 0.3);  // TODO add avatar
         newUser.setPosition(position);
         this.currentRoom.addUser(username, newUser);
         this.addUserToScene(newUser)
@@ -579,7 +581,7 @@ export class CanvasController {
         this.addCurrentRoomToScene();
 
         users.forEach(({ username, avatar, position }) => {
-            this.currentRoom.addUser(username, new User(username, avatar, 0.3));
+            this.currentRoom.addUser(username, new User(username, "girl", 0.3));  //todo add avatar 
             const user = this.currentRoom.users[username];
             user.setPosition(position);   //TODO check
             this.addUserToScene(user)
@@ -662,9 +664,10 @@ export class CanvasController {
 
         //create a mesh for the girl
         var girl = new RD.SceneNode({
-            scaling: this.myUser.avatar_scale,
-            mesh: this.myUser.avatar + "/" + this.myUser.avatar + ".wbin",
-            material: "girl"
+            scaling: user.avatar_scale,
+            mesh: user.avatar + "/" + user.avatar + ".wbin",
+            material: "girl",
+            id: user.username + "_character"
         });
 
         girl_pivot.addChild(girl);
@@ -683,7 +686,7 @@ export class CanvasController {
         girl_pivot.addChild(girl_selector);
 
 
-        this.character = girl;  //TODO animation
+        //this.character = girl;  //TODO animation
     }
 
 }

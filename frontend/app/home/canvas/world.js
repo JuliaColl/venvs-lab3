@@ -6,8 +6,8 @@ export const world = [
         scale: 400, 
         exits: [
             {
-               position: [-200, 0],
-               size: [146, 20],
+               position: [-202, 15],
+               size: [80, 30],
                toRoomId: 1,
                spawnPos: [34, 90],
             }
@@ -52,8 +52,8 @@ export const world = [
         scale: 400, 
         exits: [
             {
-               position: [-200, 0],
-               size: [146, 20],
+               position: [-202, 15],
+               size: [70, 30],
                toRoomId: 0,
                spawnPos: [34, 90],
             }
@@ -81,7 +81,7 @@ export const world = [
                         scaling: 50,
                         mesh: "assets/door.obj",
                         material: "green_door",
-                        position: [-200, 0, 0],
+                        position: [-202, 0, 0],
                         rotation: 90
                     }
                 ], 
