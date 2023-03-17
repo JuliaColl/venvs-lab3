@@ -60,7 +60,7 @@ export class ExperimentParamsController {
     }
 
     loadParam = (param) => {
-        this._params.push({...param, value: param.initialValue, isValid: true })
+        this._params.push({...param, isValid: true })
         this._experimentDetailsView.appendParam(param)
         this._refreshKeys()
     }

@@ -40,6 +40,8 @@ export class CanvasController {
     constructor() {
         this._leaveRoomOverlayView = new LeaveRoomOverlayView();
         this._leaveRoomOverlayView.onYes = () => {
+            if (!this.currentRoom) return;
+
             const exit = this.currentRoom.getExit(this.myUser.position);
             if (!exit) {  // should never happen
                 this._hasLeaveRoomDialogBeenDismissed = true;
@@ -318,6 +320,8 @@ export class CanvasController {
 
         //main update
         context.onupdate = (dt) => {
+            if (!this.currentRoom) return;
+
             //not necessary but just in case...
             this.scene.update(dt);
 
@@ -327,7 +331,7 @@ export class CanvasController {
             }
 
             //update users
-            for (let username in this.currentRoom?.users) {
+            for (let username in this.currentRoom.users) {
                 var t = getTime();
                 var time_factor = 1;
 
@@ -374,7 +378,7 @@ export class CanvasController {
             }
 
 
-            if (this.currentRoom && this.currentRoom.demo){
+            if (this.currentRoom.demo){
                 const dynamic_object = this.currentRoom.demo.dynamic_object;
                 if (dynamic_object.running){
                     const node = this.scene.getNodeById(dynamic_object.node.id);
@@ -411,7 +415,6 @@ export class CanvasController {
 
                 if (ray.testPlane(RD.ZERO, RD.UP)) //collision with infinite plane
                 {
-                    console.log("floor position clicked", ray.collision_point);
                     // update target position of my user
                     const myNodeSceneUser = this.scene.getNodeById(this.myUser.username)
                     if (myNodeSceneUser){
@@ -588,17 +591,7 @@ export class CanvasController {
         })
 
         const params = this.currentRoom.demo.dynamic_object.params
-        for (const key in params) {
-            this._experimentParamsController.loadParam({
-                description: params[key].description,
-                initialValue: params[key].value,
-                id: key,
-                minValue: null,  //TODO
-                maxValue: null,  // TODO
-                type: 'float'  //TODO
-            })
-        }
-
+        this._experimentParamsController.loadParams(Object.values(params))
         console.log(this._experimentParamsController.isValid(), this._experimentParamsController.getValues())
 
 

@@ -13,12 +13,12 @@ export class ExperimentParamsView {
     show = () => this._paramsDiv.style.display = 'flex';
     hide = () => this._paramsDiv.style.display = 'none';
 
-    appendParam = ({ description, initialValue, id }) => {
+    appendParam = ({ description, value, id }) => {
         const paramDiv = htmlToElement(`<div class="param">
         <div class="title">
             ${description}
         </div>
-        <input type="text" class="input" placeholder="${description}" value="${initialValue}">
+        <input type="text" class="input" placeholder="${description}" value="${value}">
         <div class="validation">
             
         </div>

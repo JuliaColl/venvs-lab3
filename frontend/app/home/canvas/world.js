@@ -96,19 +96,31 @@ export const world = [
                         a : 
                         {
                             value :-9.89,
-                            description : "Acceleration (m/&sup2;)"
+                            description : "Acceleration (m/&sup2;)",
+                            id: 'a',
+                            minValue: null,
+                            maxValue: null,
+                            type: 'float'
                         },
 
                         v0 : 
                         {
                             value : 50,
-                            description : "Initial velocity (v/s)"
+                            description : "Initial velocity (v/s)",
+                            id: 'v0',
+                            minValue: null,
+                            maxValue: null,
+                            type: 'float'
                         },
 
                         alpha : 
                         {
                             value : 0.8,
-                            description : "Inclination angle (rad)"
+                            description : "Inclination angle (rad)",
+                            id: 'alpha',
+                            minValue: null,
+                            maxValue: null,
+                            type: 'float'
                         }
                     },
 
