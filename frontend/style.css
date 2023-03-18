@@ -250,7 +250,7 @@ a.link:hover{
 
 
 #chatOverlay .bubble.me {
-    background-color: white;
+    background-color: rgb(207, 207, 207);
     color: #121212;
 }
 
