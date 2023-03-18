@@ -11,8 +11,6 @@ import { ExperimentParamsController } from "../experimentParams/ExperimentParams
 import { world } from './world.js';
 import { RunExperimentOverlayView } from "./runExperimentOverlayView.js";
 
-var moveCam = false;  // todo clean
-
 export class CanvasController {
     messageInputOverlayController = null;
     chatOverlayController = null;
@@ -32,6 +30,8 @@ export class CanvasController {
     animations = {};
 
     walkarea = null;
+
+    zoom = 0;
 
     constructor() {
         this._leaveRoomOverlayView = new LeaveRoomOverlayView();
@@ -249,11 +249,9 @@ export class CanvasController {
                 var smoothtarget = vec3.lerp(vec3.create(), this.camera.target, camtarget, 0.1);
 
                 this.camera.perspective(60, gl.canvas.width / gl.canvas.height, 0.1, 1000);
-                if (moveCam) {
-                    this.camera.lookAt(this.camera.position, this.camera.target, [0, 1, 0]);
-                } else {
-                    this.camera.lookAt([0, 70, 100], girlpos, [0, 1, 0]);
-                }
+                const initialPosition = [0, 70, 100];
+                this.camera.lookAt(initialPosition, girlpos, [0, 1, 0]);
+                this.camera.moveLocal([0, 0, this.zoom]);
             }
             
             
@@ -321,11 +319,6 @@ export class CanvasController {
 
             //not necessary but just in case...
             this.scene.update(dt);
-
-            // to change the camera mode
-            if (gl.keys["C"]) {
-                moveCam = !moveCam
-            }
 
             //update users
             for (let username in this.currentRoom.users) {
@@ -441,7 +434,7 @@ export class CanvasController {
 
         context.onmousewheel = (e) => {
             //move camera forward
-            this.camera.moveLocal([0, 0, e.wheel < 0 ? 10 : -10]);
+            this.zoom = this.zoom + (e.wheel < 0 ? 10 : -10);
         }
 
         //capture mouse events
