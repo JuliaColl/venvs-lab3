@@ -581,11 +581,15 @@ export class CanvasController {
         })
 
         const params = this.currentRoom.demo.dynamic_object.params
-        this._experimentParamsController.loadParams(Object.values(params))
-        console.log(this._experimentParamsController.isValid(), this._experimentParamsController.getValues())
-
-
-
+        if (params){
+            this._experimentParamsController.show();
+            this._runView.show();
+            this._experimentParamsController.loadParams(Object.values(params))
+        } else {
+            this._experimentParamsController.hide();
+            this._runView.hide();
+        }
+        
     }
 
     addCurrentRoomToScene = () => {

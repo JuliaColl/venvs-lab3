@@ -346,8 +346,12 @@ a.link:hover{
     margin: 20px;
 }
 
+#params {
+    margin: 20px 20px 0px 20px;
+}
+
 #runContainer {
-    margin: 0px 20px 20px 20px;
+    margin: 20px 20px 20px 20px;
 }
 
 button {
