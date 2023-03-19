@@ -75,14 +75,8 @@ export class CanvasController {
 
         this._runView = new RunExperimentOverlayView();
         this._runView.onRun = () => {
-            console.log("run")
-            if(this._experimentParamsController.isValid()){
-                const values = this._experimentParamsController.getValues()
-                const dynamic_object = this.currentRoom.demo.dynamic_object;
-                dynamic_object.setParams(values);
-                dynamic_object.reset()
-                dynamic_object.start()
-            }
+            this._ws?.runExperiment();
+            this.doRunExperiment();
         }
 
         document.addEventListener("visibilitychange", () => {
@@ -95,6 +89,16 @@ export class CanvasController {
             }
         });
     };
+
+    doRunExperiment = () => {
+        if(this._experimentParamsController.isValid()){
+            const values = this._experimentParamsController.getValues()
+            const dynamic_object = this.currentRoom.demo.dynamic_object;
+            dynamic_object.setParams(values);
+            dynamic_object.reset()
+            dynamic_object.start()
+        }
+    }
 
     show = () => {
         this._canvasView.show();
@@ -146,6 +150,7 @@ export class CanvasController {
             this._ws.onClientLeftRoom = (roomId, username) => this.onUserLeftRoom(username);
             this._ws.onClientJoinedRoom = (roomId, { username, avatar, position }) => this.onUserJoinedRoom(roomId, username, avatar, position);
             this._ws.onRoomSummary = ({ roomId, users }) => this.initCurrentRoom(roomId, users);
+            this._ws.onRun = this.doRunExperiment;
 
             return this._ws;
         })

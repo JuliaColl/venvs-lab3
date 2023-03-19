@@ -1,5 +1,5 @@
 import { WS_SERVER_URI } from "../config.js";
-import { ROOM_SUMMARY_MESSAGE_TYPE, SEND_MESSAGE_COMMAND,  LATEST_STATE_COMMAND, MESSAGE_COMMAND, LEFT_ROOM_COMMAND, JOINED_ROOM_COMMAND, JOIN_ROOM_COMMAND, TARGET_MESSAGE_TYPE, CHAT_MESSAGE_TYPE, AUDIO_MESSAGE_TYPE } from "./COMMAND.js";
+import { ROOM_SUMMARY_MESSAGE_TYPE, SEND_MESSAGE_COMMAND,  LATEST_STATE_COMMAND, MESSAGE_COMMAND, LEFT_ROOM_COMMAND, JOINED_ROOM_COMMAND, JOIN_ROOM_COMMAND, TARGET_MESSAGE_TYPE, CHAT_MESSAGE_TYPE, AUDIO_MESSAGE_TYPE, RUN_MESSAGE_TYPE } from "./COMMAND.js";
 
 export class WsClient {  
     onCommand = null;
@@ -14,6 +14,7 @@ export class WsClient {
     onClientJoinedRoom = null;
     onRoomSummary = null;
     onError = null;
+    onRun = null;
 
     constructor(token) {
         this.client = new WebSocket(`${WS_SERVER_URI}?token=${token}`, 'messaging-protocol');
@@ -44,6 +45,7 @@ export class WsClient {
             if (command === MESSAGE_COMMAND && body.message.type === CHAT_MESSAGE_TYPE) this.onChatMessage(body)
             if (command === MESSAGE_COMMAND && body.message.type === AUDIO_MESSAGE_TYPE) this.onAudioMessage(body)
             if (command === MESSAGE_COMMAND && body.message.type === ROOM_SUMMARY_MESSAGE_TYPE) this.onRoomSummary(body.message.content)
+            if (command === MESSAGE_COMMAND && body.message.type === RUN_MESSAGE_TYPE) this.onRun()
         };
     }
 
@@ -57,14 +59,15 @@ export class WsClient {
         }));
     }
 
-    _sendMessage = (message) => {
+    _sendMessage = (message, to = null) => {
         if (!message.content) throw new Error(`Message must have content. I.e. 'hiii!'`);
         if (!message.type) throw new Error(`Message must have type. I.e. ChatMessage`)
         this.client.send(JSON.stringify({
             command: SEND_MESSAGE_COMMAND,
             body: {
                 message
-            }
+            },
+            to
         }));
     }
 
@@ -95,6 +98,14 @@ export class WsClient {
             content: blob,
             type: AUDIO_MESSAGE_TYPE
         });
+    }
+
+    runExperiment = () => {
+        if (this.client.readyState !== this.client.OPEN) return;
+        return this._sendMessage({
+            type: RUN_MESSAGE_TYPE,
+            content: {}
+        }, 'all');
     }
 }
 

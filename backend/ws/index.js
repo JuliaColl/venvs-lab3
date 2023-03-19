@@ -50,11 +50,11 @@ export default (httpServer, db, authenticator, userPositionCache) => {
     wss.onMessage = (username, message) => {
         if (message.type !== 'utf8') throw new Error(`Received unsupported message type: ${message.type}`);
 
-        const { command, body } = JSON.parse(message.utf8Data);
+        const { command, body, to } = JSON.parse(message.utf8Data);
         const commandHandler = commandHandlerFactory[command];
         try {
             if (commandHandler === undefined) throw new Error(`Command handler undefined for command ${command}`);
-            commandHandler({ body, srcUsername: username, rooms, clients, userPositionCache });
+            commandHandler({ body, to, srcUsername: username, rooms, clients, userPositionCache });
             // console.debug(JSON.stringify(body))
         } catch (e) {
             console.error(`[${command}] Error while running command handler: ${e}`);

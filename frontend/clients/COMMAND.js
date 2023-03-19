@@ -8,5 +8,6 @@ export const JOINED_ROOM_COMMAND = 'joined-room';
 export const TARGET_MESSAGE_TYPE = 'target';
 export const CHAT_MESSAGE_TYPE = 'chat';
 export const AUDIO_MESSAGE_TYPE = 'audio';
+export const RUN_MESSAGE_TYPE = 'run';
 
 export const ROOM_SUMMARY_MESSAGE_TYPE = 'room-summary';

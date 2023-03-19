@@ -28,5 +28,10 @@ responsive scale
 go through all todos
 pantalla d'error si la conexio no chuta xd
 
+no reapareixes a la room on estaves lultima vegada
+bug dos tabs same screen
+sync params
+avatars
+
 # credits
 "Chalkboard" (https://skfb.ly/6GztC) by hellfa is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).

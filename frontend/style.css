@@ -128,7 +128,6 @@ button.enterButton {
     width: 50%;
     background-color: var(--primary-color);
     color: white;
-    padding: 14px 20px;
     margin: 8px 0;
     border: none;
     border-radius: 4px;
