@@ -1,5 +1,5 @@
 import { WS_SERVER_URI } from "../config.js";
-import { ROOM_SUMMARY_MESSAGE_TYPE, SEND_MESSAGE_COMMAND,  LATEST_STATE_COMMAND, MESSAGE_COMMAND, LEFT_ROOM_COMMAND, JOINED_ROOM_COMMAND, JOIN_ROOM_COMMAND, TARGET_MESSAGE_TYPE, CHAT_MESSAGE_TYPE, AUDIO_MESSAGE_TYPE, RUN_MESSAGE_TYPE } from "./COMMAND.js";
+import { ROOM_SUMMARY_MESSAGE_TYPE, SEND_MESSAGE_COMMAND,  LATEST_STATE_COMMAND, MESSAGE_COMMAND, LEFT_ROOM_COMMAND, JOINED_ROOM_COMMAND, JOIN_ROOM_COMMAND, TARGET_MESSAGE_TYPE, CHAT_MESSAGE_TYPE, AUDIO_MESSAGE_TYPE, RUN_MESSAGE_TYPE, PARAMS_MESSAGE_TYPE } from "./COMMAND.js";
 
 export class WsClient {  
     onCommand = null;
@@ -15,6 +15,7 @@ export class WsClient {
     onRoomSummary = null;
     onError = null;
     onRun = null;
+    onParamUpdated = null;
 
     constructor(token) {
         this.client = new WebSocket(`${WS_SERVER_URI}?token=${token}`, 'messaging-protocol');
@@ -46,6 +47,11 @@ export class WsClient {
             if (command === MESSAGE_COMMAND && body.message.type === AUDIO_MESSAGE_TYPE) this.onAudioMessage(body)
             if (command === MESSAGE_COMMAND && body.message.type === ROOM_SUMMARY_MESSAGE_TYPE) this.onRoomSummary(body.message.content)
             if (command === MESSAGE_COMMAND && body.message.type === RUN_MESSAGE_TYPE) this.onRun()
+            if (command === MESSAGE_COMMAND && body.message.type === PARAMS_MESSAGE_TYPE) {
+                
+                console.log("received", body.message.content.id, body.message.content.value)
+                this.onParamUpdated(body.message.content);
+            }
         };
     }
 
@@ -59,7 +65,7 @@ export class WsClient {
         }));
     }
 
-    _sendMessage = (message, to = null) => {
+    _sendMessage = (message, to = 'all') => {
         if (!message.content) throw new Error(`Message must have content. I.e. 'hiii!'`);
         if (!message.type) throw new Error(`Message must have type. I.e. ChatMessage`)
         this.client.send(JSON.stringify({
@@ -105,7 +111,19 @@ export class WsClient {
         return this._sendMessage({
             type: RUN_MESSAGE_TYPE,
             content: {}
-        }, 'all');
+        });
+    }
+
+    sendParams = (id, value) => {
+        if (this.client.readyState !== this.client.OPEN) return;
+        console.log("sending", id, value)
+        return this._sendMessage({
+            type: PARAMS_MESSAGE_TYPE,
+            content: {
+                id, 
+                value
+            }
+        });
     }
 }
 

@@ -68,7 +68,8 @@ export class CanvasController {
         }
 
         this._experimentParamsController = new ExperimentParamsController();
-
+        this._experimentParamsController.onValue = (id, value) => this._ws.sendParams(id, value)
+        
         this._canvasView = new CanvasView();
         this._canvasView.onMouse = this.onMouse;
         this._initRooms();
@@ -151,7 +152,7 @@ export class CanvasController {
             this._ws.onClientJoinedRoom = (roomId, { username, avatar, position }) => this.onUserJoinedRoom(roomId, username, avatar, position);
             this._ws.onRoomSummary = ({ roomId, users }) => this.initCurrentRoom(roomId, users);
             this._ws.onRun = this.doRunExperiment;
-
+            this._ws.onParamUpdated = ({ id, value }) => this._experimentParamsController.setValue(id, value)
             return this._ws;
         })
 

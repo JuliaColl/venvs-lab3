@@ -29,6 +29,11 @@ export class ExperimentParamsView {
         })
     }
 
+    setValue = (idx, value) => {
+        const param = this._getParam(idx);
+        param.querySelector('.input').value = value;
+    }
+
     _getParam = (idx) => this._paramsDiv.children[idx]
 
     setValidationError = (idx, validationError) => {

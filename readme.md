@@ -30,7 +30,6 @@ pantalla d'error si la conexio no chuta xd
 
 no reapareixes a la room on estaves lultima vegada
 bug dos tabs same screen
-sync params
 avatars
 
 # credits

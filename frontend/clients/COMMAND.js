@@ -9,5 +9,6 @@ export const TARGET_MESSAGE_TYPE = 'target';
 export const CHAT_MESSAGE_TYPE = 'chat';
 export const AUDIO_MESSAGE_TYPE = 'audio';
 export const RUN_MESSAGE_TYPE = 'run';
+export const PARAMS_MESSAGE_TYPE = 'params';
 
 export const ROOM_SUMMARY_MESSAGE_TYPE = 'room-summary';
