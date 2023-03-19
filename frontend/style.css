@@ -57,7 +57,7 @@ html { box-sizing: border-box; height: 100%; }
 .enterPage::before {
     content: "";
     /* background-image: url(/node/9011/data/images/rooms/awesome-house.png); */ /* todo before deploy */
-    background-image: url(/data/images/rooms/awesome-house.png);
+    background-image: url(/data/images/maths-background.jpg);
     background-size: cover;
     position: absolute;
     top: 0px;
@@ -65,6 +65,7 @@ html { box-sizing: border-box; height: 100%; }
     bottom: 0px;
     left: 0px;
     opacity: 0.7;
+    filter: blur(4px);
 }
 
 @media screen and (max-width: 450px) {
