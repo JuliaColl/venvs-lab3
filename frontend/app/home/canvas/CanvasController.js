@@ -636,16 +636,22 @@ export class CanvasController {
 
         demo.dynamic_objects.forEach((object) => {
             var dynamic_object = new RD.SceneNode(object.node);
-            if (object.rotation) {
-                dynamic_object.rotate(rotation * DEG2RAD, RD.UP)
+            if (object.node.rotation) {
+                dynamic_object.rotate(object.node.rotation * DEG2RAD, RD.UP)
+            }
+            if(object.node.gltf){
+                dynamic_object.loadGLTF(object.node.gltf);
             }
             this.scene.root.addChild(dynamic_object);
         })
 
-        demo.static_objects.forEach(({ rotation, ...node }) => {
+        demo.static_objects.forEach(({ rotation, gltf, ...node }) => {
             var static_object = new RD.SceneNode(node);
             if (rotation) {
                 static_object.rotate(rotation * DEG2RAD, RD.UP)
+            }
+            if(gltf){
+                dynamic_object.loadGLTF(gltf);
             }
             this.scene.root.addChild(static_object);
         })

@@ -259,6 +259,10 @@ export const world = [
                 {
                     path: "assets/parabolic-blackboard.png",
                     name: "parabolic-blackboard"
+                },
+                {
+                    path: "assets/color-atlas-new.png",
+                    name: "atlas"
                 }
             ],
 
@@ -284,7 +288,7 @@ export const world = [
                 a1:
                 {
                     value: 2,
-                    description: "Acceleration red car (m/&sup2;)",
+                    description: "Acceleration blue car (m/&sup2;)",
                     id: 'a1',
                     minValue: null,
                     maxValue: null,
@@ -294,7 +298,7 @@ export const world = [
                 a2:
                 {
                     value: -3,
-                    description: "Acceleration green car (m/&sup2;)",
+                    description: "Acceleration red car (m/&sup2;)",
                     id: 'a2',
                     minValue: null,
                     maxValue: null,
@@ -340,16 +344,16 @@ export const world = [
             dynamic_objects: [
                 {
                     velocity: [0, 0, 0],
-                    position: [-170, 10, -130],
+                    position: [-150, 10, -130],
                     running: false,
 
                     node: {
-                        position: [-170, 10, -130],
-                        mesh: "cube",
-                        color: [1, 0, 0, 1],
-                        scaling: [10, 10, 10],
+                        position: [-150, 10, -130],
+                        gltf: "data/assets/raceFuture.glb",     //TODO deploy
+                        scaling: [15, 15, 15],
                         name: "car1",
-                        id: "car1"
+                        id: "car1", 
+                        rotation: 270,
                     },
 
                     update: function (dt, params) {
@@ -385,11 +389,12 @@ export const world = [
 
                     node: {
                         position: [170, 10, -130],
-                        mesh: "cube",
-                        color: [0, 1, 0, 1],
-                        scaling: [10, 10, 10],
+                        gltf: "data/assets/race.glb",  //TODO deploy
+                        //material: "atlas",
+                        scaling: [15, 15, 15],
                         name: "car2",
-                        id: "car2"
+                        id: "car2",
+                        rotation: 90
                     },
 
                     update: function (dt, params) {
@@ -446,6 +451,10 @@ export const world = [
                 {
                     path: "assets/parabolic-blackboard.png",
                     name: "parabolic-blackboard"
+                },
+                {
+                    path: "assets/color-atlas-new.png",
+                    name: "atlas"
                 }
             ],
 
@@ -492,7 +501,7 @@ export const world = [
 
             
             stop: function () {
-                if (this.dynamic_objects[0].node.position[1] < +10) {
+                if (this.dynamic_objects[0].node.position[1] < 2) {
                     this.dynamic_objects[0].stop();
                 }
             },
@@ -524,14 +533,14 @@ export const world = [
             dynamic_objects: [
                 {
                     velocity: [0,0,0],
-                    position: [0, 10, -130],
+                    position: [0, 2, -130],
                     running: false,
 
                     node: {
-                        position: [0, 10, -130],
-                        mesh: "cube",
-                        color: [1, 0, 0, 1],
-                        scaling: [10, 10, 10],
+                        position: [0, 2, -130],
+                        mesh: "assets/ufo.obj",
+                        material: "atlas",
+                        scaling: [5, 5, 5],
                         name: "parabolic",
                         id: "parabolic"
                     },
