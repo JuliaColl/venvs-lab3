@@ -377,7 +377,7 @@ export class CanvasController {
             if (this.currentRoom.demo){
                 const demo = this.currentRoom.demo;
                 demo.update(dt);
-                
+                demo.stop();
                 demo.dynamic_objects.forEach( (dynamic_object) => {
                     if (dynamic_object.running){
                         const node = this.scene.getNodeById(dynamic_object.node.id);

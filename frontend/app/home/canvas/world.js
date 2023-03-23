@@ -32,6 +32,7 @@ export const world = [
                 }
             ],
 
+            update: function () { },
 
             static_objects: [
                 {
@@ -138,7 +139,7 @@ export const world = [
                     type: 'float'
                 }
             },
-            
+
             /*
             stop: function () {
                 this.running = false;
@@ -146,19 +147,19 @@ export const world = [
             */
 
             start: function () {
-                this.dynamic_objects.forEach( (dynamic_object) => {
+                this.dynamic_objects.forEach((dynamic_object) => {
                     dynamic_object.running = true;
                 })
             },
 
             update: function (dt) {
-                this.dynamic_objects.forEach( (dynamic_object) => {
+                this.dynamic_objects.forEach((dynamic_object) => {
                     dynamic_object.update(dt, this.params);
                 })
-            }, 
+            },
 
-            reset: function(){
-                this.dynamic_objects.forEach( (dynamic_object) => {
+            reset: function () {
+                this.dynamic_objects.forEach((dynamic_object) => {
                     dynamic_object.reset(this.params);
                 })
             },
@@ -259,86 +260,144 @@ export const world = [
                 }
             ],
 
+            params:
+            {
+                a1:
+                {
+                    value: 2,
+                    description: "Acceleration red car (m/&sup2;)",
+                    id: 'a1',
+                    minValue: null,
+                    maxValue: null,
+                    type: 'float'
+                },
+
+                a2:
+                {
+                    value: -3,
+                    description: "Acceleration green car (m/&sup2;)",
+                    id: 'a2',
+                    minValue: null,
+                    maxValue: null,
+                    type: 'float'
+                },
+
+            },
+
+            
+            stop: function () {
+                var diff = Math.abs(this.dynamic_objects[0].node.position[0] - this.dynamic_objects[1].node.position[0]);
+                //console.log(diff)
+                if ( diff < 5){     //todo check if 5 is the best offset
+                    this.dynamic_objects[0].stop();
+                    this.dynamic_objects[1].stop();
+                }
+            },
+            
+
+            start: function () {
+                this.dynamic_objects.forEach((dynamic_object) => {
+                    dynamic_object.running = true;
+                })
+            },
+
+            update: function (dt) {
+                this.dynamic_objects.forEach((dynamic_object) => {
+                    dynamic_object.update(dt, this.params);
+                })
+            },
+
+            reset: function () {
+                this.dynamic_objects.forEach((dynamic_object) => {
+                    dynamic_object.reset(this.params);
+                })
+            },
+
+            setParams: function (params) {
+                this.params.a1.value = params.a1;
+                this.params.a2.value = params.a2;
+            },
+
             dynamic_objects: [
                 {
-                    velocity: [-20, 30, 1],
-                    position: [-115, 10, -130],
+                    velocity: [0, 0, 0],
+                    position: [-170, 10, -130],
                     running: false,
 
-                    params:
-                    {
-                        a:
-                        {
-                            value: -9.89,
-                            description: "Acceleration (m/&sup2;)",
-                            id: 'a',
-                            minValue: null,
-                            maxValue: null,
-                            type: 'float'
-                        },
-
-                        v0:
-                        {
-                            value: 50,
-                            description: "Initial velocity (v/s)",
-                            id: 'v0',
-                            minValue: null,
-                            maxValue: null,
-                            type: 'float'
-                        },
-
-                        alpha:
-                        {
-                            value: 0.8,
-                            description: "Inclination angle (rad)",
-                            id: 'alpha',
-                            minValue: null,
-                            maxValue: null,
-                            type: 'float'
-                        }
-                    },
-
                     node: {
-                        position: [-115, 10, -130],
+                        position: [-170, 10, -130],
                         mesh: "cube",
                         color: [1, 0, 0, 1],
                         scaling: [10, 10, 10],
-                        name: "parabolic",
-                        id: "parabolic"
+                        name: "car1",
+                        id: "car1"
                     },
 
-                    update: function (dt) {
+                    update: function (dt, params) {
                         if (!this.running) return;
+
                         const sdt = dt * 5;
-                        this.node.position[0] = this.node.position[0] + this.velocity[0] * sdt;
-                        this.node.position[1] = this.node.position[1] + this.velocity[1] * sdt + 1 / 2 * this.params.a.value * sdt * sdt;
-                        this.node.position[2] = this.node.position[2] + this.velocity[2] * sdt;
-                        this.velocity[1] = this.velocity[1] + this.params.a.value * sdt;
+                        this.node.position[0] = this.node.position[0] + this.velocity[0] * sdt + 1 / 2 * params.a1.value * sdt * sdt;
+                        this.velocity[0] = this.velocity[0] + params.a1.value * sdt;
                         this.node.position = [...this.node.position];
-                        if (this.node.position[1] < +10) {
-                            this.stop()
+
+                        
+                        if (this.node.position[0] < -200 || this.node.position[0] > 200) {
+                            this.stop();
                         }
+                        
+
                         return this.node.position;
                     },
+
                     stop: function () {
                         this.running = false;
                     },
-                    start: function () {
-                        this.running = true;
-                    },
-                    reset: function () {
+
+                    reset: function (params) {
                         this.node.position = [...this.position];
-                        this.velocity = [
-                            this.params.v0.value * Math.cos(this.params.alpha),
-                            this.params.v0.value * Math.sin(this.params.alpha),
-                            0
-                        ];
+                        this.velocity = [0,0,0];
                     },
-                    setParams: function (params) {
-                        this.params.a.value = params.a;
-                        this.params.v0.value = params.v0;
-                        this.params.alpha = params.alpha;
-                    }
+                },
+                {
+                    velocity: [0, 0, 0],
+                    position: [170, 10, -130],
+                    running: false,
+
+                    node: {
+                        position: [170, 10, -130],
+                        mesh: "cube",
+                        color: [0, 1, 0, 1],
+                        scaling: [10, 10, 10],
+                        name: "car2",
+                        id: "car2"
+                    },
+
+                    update: function (dt, params) {
+                        if (!this.running) return;
+
+                        const sdt = dt * 5;
+                        this.node.position[0] = this.node.position[0] + this.velocity[0] * sdt + 1 / 2 * params.a2.value * sdt * sdt;
+                        this.velocity[0] = this.velocity[0] + params.a2.value * sdt;
+                        this.node.position = [...this.node.position];
+
+                        
+                        if (this.node.position[0] < -200 || this.node.position[0] > 200) {
+                            this.stop();
+                        }
+                        
+
+                        return this.node.position;
+                    },
+
+                    stop: function () {
+                        this.running = false;
+                    },
+
+                    reset: function (params) {
+                        this.node.position = [...this.position];
+                        this.velocity = [0,0,0];
+                    },
                 }
             ]
         }
