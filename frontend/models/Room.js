@@ -18,11 +18,6 @@ export class Room {
         this.scale = scale
         this.walkarea = walkarea
         this.demo = demo;
-
-        
-        demo.update = demo.update;
-        demo.restart = demo.restart;
-        demo.setParams = demo.setParams;
     }
 
     addUser(id, user) {
