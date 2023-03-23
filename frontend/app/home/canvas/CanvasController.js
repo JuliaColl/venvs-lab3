@@ -94,10 +94,10 @@ export class CanvasController {
     doRunExperiment = () => {
         if(this._experimentParamsController.isValid()){
             const values = this._experimentParamsController.getValues()
-            const dynamic_object = this.currentRoom.demo.dynamic_object;
-            dynamic_object.setParams(values);
-            dynamic_object.reset()
-            dynamic_object.start()
+            const demo = this.currentRoom.demo;
+            demo.setParams(values);
+            demo.reset()
+            demo.start()
         }
     }
 
@@ -375,12 +375,16 @@ export class CanvasController {
 
 
             if (this.currentRoom.demo){
-                const dynamic_object = this.currentRoom.demo.dynamic_object;
-                if (dynamic_object.running){
-                    const node = this.scene.getNodeById(dynamic_object.node.id);
-                    node.position = dynamic_object.update(dt);
-                }
+                const demo = this.currentRoom.demo;
+                demo.update(dt);
                 
+                demo.dynamic_objects.forEach( (dynamic_object) => {
+                    if (dynamic_object.running){
+                        const node = this.scene.getNodeById(dynamic_object.node.id);
+                        node.position = dynamic_object.node.position;
+                    }
+                })
+                                
             }
 
              // check exit
@@ -586,7 +590,7 @@ export class CanvasController {
             this.addUserToScene(user)
         })
 
-        const params = this.currentRoom.demo.dynamic_object.params
+        const params = this.currentRoom.demo.params
         if (params){
             this._experimentParamsController.show();
             this._runView.show();
@@ -627,8 +631,16 @@ export class CanvasController {
 
         })
 
-        var dynamic_object = new RD.SceneNode(demo.dynamic_object.node);
-        this.scene.root.addChild(dynamic_object);
+        //var dynamic_object = new RD.SceneNode(demo.dynamic_object.node);
+        //this.scene.root.addChild(dynamic_object);
+
+        demo.dynamic_objects.forEach((object) => {
+            var dynamic_object = new RD.SceneNode(object.node);
+            if (object.rotation) {
+                dynamic_object.rotate(rotation * DEG2RAD, RD.UP)
+            }
+            this.scene.root.addChild(dynamic_object);
+        })
 
         demo.static_objects.forEach(({ rotation, ...node }) => {
             var static_object = new RD.SceneNode(node);

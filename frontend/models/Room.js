@@ -20,9 +20,9 @@ export class Room {
         this.demo = demo;
 
         
-        demo.dynamic_object.update = demo.dynamic_object.update;
-        demo.dynamic_object.restart = demo.dynamic_object.restart;
-        demo.dynamic_object.setParams = demo.dynamic_object.setParams;
+        demo.update = demo.update;
+        demo.restart = demo.restart;
+        demo.setParams = demo.setParams;
     }
 
     addUser(id, user) {
