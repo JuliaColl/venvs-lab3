@@ -28,7 +28,7 @@ responsive scale
 go through all todos
 pantalla d'error si la conexio no chuta xd
 
-no reapareixes a la room on estaves lultima vegada
+no reapareixes a la room on estaves lultima vegada  (a mi, Julia, si que em va)
 bug dos tabs same screen
 avatars
 

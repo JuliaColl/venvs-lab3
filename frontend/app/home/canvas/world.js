@@ -33,6 +33,8 @@ export const world = [
             ],
 
             update: function () { },
+            stop: function () { },
+
 
             static_objects: [
                 {
@@ -140,11 +142,13 @@ export const world = [
                 }
             },
 
-            /*
+            
             stop: function () {
-                this.running = false;
+                if (this.dynamic_objects[0].node.position[1] < +10) {
+                    this.dynamic_objects[0].stop();
+                }
             },
-            */
+            
 
             start: function () {
                 this.dynamic_objects.forEach((dynamic_object) => {
@@ -193,9 +197,7 @@ export const world = [
                         this.node.position[2] = this.node.position[2] + this.velocity[2] * sdt;
                         this.velocity[1] = this.velocity[1] + params.a.value * sdt;
                         this.node.position = [...this.node.position];
-                        if (this.node.position[1] < +10) {
-                            this.stop();
-                        }
+                        
                         return this.node.position;
                     },
 
