@@ -99,17 +99,28 @@ export const world = [
                 {
                     path: "assets/parabolic-blackboard.png",
                     name: "parabolic-blackboard"
+                },
+                {
+                    path: "images/target.png",
+                    name: "target"
                 }
             ],
 
 
             static_objects: [
                 {
-                    position: [140, 10, 120],
-                    mesh: "cube",
-                    color: [0, 1, 0, 1],
-                    scaling: [10, 10, 10],
-                    name: "parabolic"
+                    position: [-105, 10, -130],
+                    gltf: "data/assets/weapon_catapult.glb",     //TODO deploy
+                    scaling: [50, 50, 50],
+                    name: "parabolic",
+                    rotation: 270
+                },
+                {
+                    scaling: 30,
+                    mesh: "planeXZ",
+                    material: "target",
+                    position: [170, 1, -155],
+                    rotation: 50
                 },
                 {
                     scaling: 50,
@@ -118,12 +129,14 @@ export const world = [
                     position: [-202, 0, 0],
                     rotation: 90
                 },
+                
                 {
                     scaling: 0.75,
                     mesh: "assets/blackboard3.obj",
                     material: "parabolic-blackboard",
                     position: [0, 25, -250]
                 }
+                
             ],
 
             params:
@@ -194,14 +207,13 @@ export const world = [
             dynamic_objects: [
                 {
                     velocity: [-20, 30, 1],
-                    position: [-115, 10, -130],
+                    position: [-115, 30, -130],
                     running: false,
 
                     node: {
-                        position: [-115, 10, -130],
-                        mesh: "cube",
-                        color: [1, 0, 0, 1],
-                        scaling: [10, 10, 10],
+                        position: [-115, 30, -130],
+                        gltf: "data/assets/ball.glb",     //TODO deploy
+                        scaling: [50, 50, 50],
                         name: "parabolic",
                         id: "parabolic"
                     },
@@ -257,8 +269,8 @@ export const world = [
                     name: "red_door"
                 },
                 {
-                    path: "assets/parabolic-blackboard.png",
-                    name: "parabolic-blackboard"
+                    path: "assets/blackboard-mua.png",
+                    name: "blackboard-mua"
                 },
                 {
                     path: "assets/color-atlas-new.png",
@@ -278,7 +290,7 @@ export const world = [
                 {
                     scaling: 0.75,
                     mesh: "assets/blackboard3.obj",
-                    material: "parabolic-blackboard",
+                    material: "blackboard-mua",
                     position: [0, 25, -250]
                 }
             ],

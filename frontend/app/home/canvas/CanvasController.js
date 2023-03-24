@@ -651,7 +651,7 @@ export class CanvasController {
                 static_object.rotate(rotation * DEG2RAD, RD.UP)
             }
             if(gltf){
-                dynamic_object.loadGLTF(gltf);
+                static_object.loadGLTF(gltf);
             }
             this.scene.root.addChild(static_object);
         })
