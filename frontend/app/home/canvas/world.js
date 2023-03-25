@@ -275,6 +275,10 @@ export const world = [
                 {
                     path: "assets/color-atlas-new.png",
                     name: "atlas"
+                },
+                {
+                    path: "images/target.png",
+                    name: "target"
                 }
             ],
 
@@ -292,6 +296,13 @@ export const world = [
                     mesh: "assets/blackboard3.obj",
                     material: "blackboard-mua",
                     position: [0, 25, -250]
+                },
+                {
+                    scaling: 30,
+                    mesh: "planeXZ",
+                    material: "target",
+                    position: [-70, 10, -130],
+                    rotation: 50
                 }
             ],
 
@@ -362,7 +373,7 @@ export const world = [
                     node: {
                         position: [-150, 10, -130],
                         gltf: "data/assets/raceFuture.glb",     //TODO deploy
-                        scaling: [15, 15, 15],
+                        scaling: 7,
                         name: "car1",
                         id: "car1", 
                         rotation: 270,
@@ -403,7 +414,7 @@ export const world = [
                         position: [170, 10, -130],
                         gltf: "data/assets/race.glb",  //TODO deploy
                         //material: "atlas",
-                        scaling: [15, 15, 15],
+                        scaling: 7,
                         name: "car2",
                         id: "car2",
                         rotation: 90

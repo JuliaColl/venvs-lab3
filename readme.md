@@ -28,8 +28,8 @@ bug dos tabs same screen
 avatars
 titols a les portes
 al cambiar la room algun param es undefined
-falta target als cotxes
 falta altura o algun objectiu al del ovni
+target overlaps girl
 
 # credits
 "Chalkboard" (https://skfb.ly/6GztC) by hellfa is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
