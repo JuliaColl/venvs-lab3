@@ -473,8 +473,8 @@ export const world = [
                     name: "blue_door"
                 },
                 {
-                    path: "assets/parabolic-blackboard.png",
-                    name: "parabolic-blackboard"
+                    path: "assets/blackboard-ufo.png",
+                    name: "ufo-blackboard"
                 },
                 {
                     path: "assets/color-atlas-new.png",
@@ -494,7 +494,7 @@ export const world = [
                 {
                     scaling: 0.75,
                     mesh: "assets/blackboard3.obj",
-                    material: "parabolic-blackboard",
+                    material: "ufo-blackboard",
                     position: [0, 25, -250]
                 },
                 {

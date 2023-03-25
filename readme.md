@@ -28,7 +28,6 @@ bug dos tabs same screen
 avatars
 titols a les portes
 al cambiar la room algun param es undefined
-falta altura o algun objectiu al del ovni
 target overlaps girl
 cars: use the full room, dont have everything in the back... and use 3D, dont have everything parallel to the blackboard
 parabolic: use the full room, dont have everything in the back... and use 3D, dont have everything parallel to the blackboard
