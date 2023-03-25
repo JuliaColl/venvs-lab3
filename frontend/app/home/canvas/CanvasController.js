@@ -10,6 +10,7 @@ import { LeaveRoomOverlayView } from "./LeaveRoomOverlayView.js";
 import { ExperimentParamsController } from "../experimentParams/ExperimentParamsController.js";
 import { world } from './world.js';
 import { RunExperimentOverlayView } from "./runExperimentOverlayView.js";
+import { MeasuringTapeOverlayView } from "./MeasuringTapeOverlayView.js";
 
 export class CanvasController {
     messageInputOverlayController = null;
@@ -32,6 +33,10 @@ export class CanvasController {
     walkarea = null;
 
     zoom = 0;
+
+    _isMeasuring = false;
+    _measureStartPosition = null;
+    _MEASURE_PRECISION = 100;
 
     constructor() {
         this._leaveRoomOverlayView = new LeaveRoomOverlayView();
@@ -80,6 +85,15 @@ export class CanvasController {
             this.doRunExperiment();
         }
 
+        this._measuringView = new MeasuringTapeOverlayView();
+        this._measuringView.onStartMeasure = () => {
+            this._isMeasuring = true;
+            this._measureStartPosition = null;
+        }
+        this._measuringView.onStopMeasure = () => {
+            this._isMeasuring = false;
+        }
+
         document.addEventListener("visibilitychange", () => {
             if (document.visibilityState === 'visible') {
                 if (!this.currentRoom) return;
@@ -105,12 +119,14 @@ export class CanvasController {
         this._canvasView.show();
         this._experimentParamsController.show();
         this._runView.show();
+        this._measuringView.show();
     }
     hide = () => {
         this._canvasView.hide();
         this._leaveRoomOverlayView.hide();
         this._experimentParamsController.hide();
         this._runView.hide();
+        this._measuringView.hide();
     }
 
     useSsao = false;
@@ -357,8 +373,20 @@ export class CanvasController {
                         user.set3DTarget(userNode.position)
                     }
 
-                    //console.log("girl pos: " + girl_pivot.position + " target pos: " + this.myUser.target)
-                    //console.log(dist)  
+                    if (this._isMeasuring){
+                        let distance = 0;
+                        if (this._measureStartPosition == null){
+                            this._measureStartPosition = [...userNode.position];
+                        } else {
+                            distance = Math.round(Math.sqrt(
+                                Math.pow(userNode.position[0]-this._measureStartPosition[0], 2)
+                                +
+                                Math.pow(userNode.position[2]-this._measureStartPosition[2], 2)
+                                ) * this._MEASURE_PRECISION) / this._MEASURE_PRECISION
+                            ;
+                        }
+                        this._measuringView.setMeasure(`${distance}m`);
+                    }
                 }
                 else {
                     user.set3DTarget(userNode.position)
@@ -594,10 +622,12 @@ export class CanvasController {
         if (params){
             this._experimentParamsController.show();
             this._runView.show();
+            this._measuringView.show();
             this._experimentParamsController.loadParams(Object.values(params))
         } else {
             this._experimentParamsController.hide();
             this._runView.hide();
+            this._measuringView.hide();
         }
         
     }
