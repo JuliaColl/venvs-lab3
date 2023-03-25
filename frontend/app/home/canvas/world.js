@@ -152,7 +152,7 @@ export const world = [
                     scaling: 30,
                     mesh: "planeXZ",
                     material: "target",
-                    position: [170, 1, -155],
+                    position: [170, 1, -130],
                     rotation: 50
                 },
                 {
@@ -186,7 +186,7 @@ export const world = [
 
                 v0:
                 {
-                    value: 50,
+                    value: 25,
                     description: "Initial velocity (v/s)",
                     id: 'v0',
                     minValue: null,
@@ -196,7 +196,7 @@ export const world = [
 
                 alpha:
                 {
-                    value: 0.8,
+                    value: 0.123,
                     description: "Inclination angle (rad)",
                     id: 'alpha',
                     minValue: null,
