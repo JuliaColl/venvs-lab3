@@ -23,7 +23,6 @@ npm run dev
 https://ecv-etic.upf.edu/node/9011/
 
 # todo
-no reapareixes a la room on estaves lultima vegada  (a mi, Julia, si que em va)
 bug dos tabs same screen
 avatars
 titols a les portes
@@ -31,6 +30,7 @@ al cambiar la room algun param es undefined
 target overlaps girl
 cars: use the full room, dont have everything in the back... and use 3D, dont have everything parallel to the blackboard
 parabolic: use the full room, dont have everything in the back... and use 3D, dont have everything parallel to the blackboard
+i dont spawn al lobby
 
 # credits
 "Chalkboard" (https://skfb.ly/6GztC) by hellfa is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).

@@ -39,6 +39,18 @@ export const world = [
                 {
                     path: "assets/blue.png",
                     name: "blue_door"
+                },
+                {
+                    path: "assets/title-ufo.png",
+                    name: "title-ufo"
+                },
+                {
+                    path: "assets/title-parabolic.png",
+                    name: "title-parabolic"
+                },
+                {
+                    path: "assets/title-cars.png",
+                    name: "title-cars"
                 }
             ],
 
@@ -68,7 +80,27 @@ export const world = [
                     position: [202, 0, 0],
                     rotation: 90
                 },
-                
+                {
+                    scaling: 75,
+                    mesh: "planeXZ",
+                    material: "title-parabolic",
+                    position: [-170, 1, 15],
+                    rotation: 90
+                },
+                {
+                    scaling: 75,
+                    mesh: "planeXZ",
+                    material: "title-ufo",
+                    position: [170, 1, 15],
+                    rotation: 270
+                },
+                {
+                    scaling: 75,
+                    mesh: "planeXZ",
+                    material: "title-cars",
+                    position: [-15, 1, -175],
+                    rotation: 0
+                }
             ],
 
             dynamic_objects: []
