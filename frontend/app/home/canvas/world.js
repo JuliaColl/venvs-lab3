@@ -67,7 +67,8 @@ export const world = [
                     material: "blue_door",
                     position: [202, 0, 0],
                     rotation: 90
-                }
+                },
+                
             ],
 
             dynamic_objects: []
@@ -495,6 +496,13 @@ export const world = [
                     mesh: "assets/blackboard3.obj",
                     material: "parabolic-blackboard",
                     position: [0, 25, -250]
+                },
+                {
+                    position: [0, 125, -130],
+                    mesh: "cube",
+                    color: [1, 0, 0, 1],
+                    scaling: 4,
+                    name: "parabolic"
                 }
             ],
 
@@ -512,7 +520,7 @@ export const world = [
 
                 v0:
                 {
-                    value: 50,
+                    value: 20,
                     description: "Initial velocity (v/s)",
                     id: 'v0',
                     minValue: null,
@@ -524,7 +532,7 @@ export const world = [
 
             
             stop: function () {
-                if (this.dynamic_objects[0].node.position[1] < 2) {
+                if (this.dynamic_objects[0].node.position[1] < 1) {
                     this.dynamic_objects[0].stop();
                 }
             },
