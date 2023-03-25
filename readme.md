@@ -23,14 +23,13 @@ npm run dev
 https://ecv-etic.upf.edu/node/9011/
 
 # todo
-some times el minion li costa apareixer
-responsive scale 
-go through all todos
-pantalla d'error si la conexio no chuta xd
-
 no reapareixes a la room on estaves lultima vegada  (a mi, Julia, si que em va)
 bug dos tabs same screen
 avatars
+titols a les portes
+al cambiar la room algun param es undefined
+falta target als cotxes
+falta altura o algun objectiu al del ovni
 
 # credits
 "Chalkboard" (https://skfb.ly/6GztC) by hellfa is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
