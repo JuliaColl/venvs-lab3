@@ -343,7 +343,7 @@ a.link:hover{
     font-size: initial;
     flex-direction: column;
 
-    margin: 20px;
+    margin: 20px 20px 0px 20px;
 }
 
 #params {
