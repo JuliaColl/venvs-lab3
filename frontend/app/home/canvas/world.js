@@ -563,7 +563,7 @@ export const world = [
                         position: [0, 2, -130],
                         mesh: "assets/ufo.obj",
                         material: "atlas",
-                        scaling: [5, 5, 5],
+                        scaling: 2.5,
                         name: "parabolic",
                         id: "parabolic"
                     },
