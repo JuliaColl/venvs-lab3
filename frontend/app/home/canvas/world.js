@@ -174,7 +174,7 @@ export const world = [
 
             
             stop: function () {
-                if (this.dynamic_objects[0].node.position[1] < +10) {
+                if (this.dynamic_objects[0].node.position[1] < -1) {
                     this.dynamic_objects[0].stop();
                 }
             },
