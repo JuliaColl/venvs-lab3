@@ -162,7 +162,6 @@ export const world = [
                     position: [-202, 0, 0],
                     rotation: 90
                 },
-                
                 {
                     scaling: 0.75,
                     mesh: "assets/blackboard3.obj",
@@ -177,7 +176,7 @@ export const world = [
                 a:
                 {
                     value: -9.89,
-                    description: "Acceleration (m/&sup2;)",
+                    description: "Acceleration (u/&sup2;)",
                     id: 'a',
                     minValue: null,
                     maxValue: null,
@@ -187,7 +186,7 @@ export const world = [
                 v0:
                 {
                     value: 25,
-                    description: "Initial velocity (v/s)",
+                    description: "Initial velocity (u/s)",
                     id: 'v0',
                     minValue: null,
                     maxValue: null,
@@ -344,7 +343,7 @@ export const world = [
                 a1:
                 {
                     value: 2,
-                    description: "Acceleration blue car (m/&sup2;)",
+                    description: "Acceleration blue car (u/&sup2;)",
                     id: 'a1',
                     minValue: null,
                     maxValue: null,
@@ -354,7 +353,7 @@ export const world = [
                 a2:
                 {
                     value: -3,
-                    description: "Acceleration red car (m/&sup2;)",
+                    description: "Acceleration red car (u/&sup2;)",
                     id: 'a2',
                     minValue: null,
                     maxValue: null,
@@ -543,7 +542,7 @@ export const world = [
                 a:
                 {
                     value: -9.89,
-                    description: "Acceleration (m/&sup2;)",
+                    description: "Acceleration (u/&sup2;)",
                     id: 'a',
                     minValue: null,
                     maxValue: null,
@@ -553,7 +552,7 @@ export const world = [
                 v0:
                 {
                     value: 20,
-                    description: "Initial velocity (v/s)",
+                    description: "Initial velocity (u/s)",
                     id: 'v0',
                     minValue: null,
                     maxValue: null,

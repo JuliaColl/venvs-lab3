@@ -385,7 +385,7 @@ export class CanvasController {
                                 ) * this._MEASURE_PRECISION) / this._MEASURE_PRECISION
                             ;
                         }
-                        this._measuringView.setMeasure(`${distance}m`);
+                        this._measuringView.setMeasure(`${distance}u`);
                     }
                 }
                 else {
