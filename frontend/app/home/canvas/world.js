@@ -45,7 +45,7 @@ export const world = [
                     name: "title-ufo"
                 },
                 {
-                    path: "assets/title-parabolic.png",
+                    path: "assets/title-parabolic2.png",
                     name: "title-parabolic"
                 },
                 {
@@ -82,23 +82,23 @@ export const world = [
                 },
                 {
                     scaling: 75,
-                    mesh: "planeXZ",
+                    mesh: "plane",
                     material: "title-parabolic",
-                    position: [-170, 1, 15],
+                    position: [-200, 70, 15],
                     rotation: 90
                 },
                 {
                     scaling: 75,
-                    mesh: "planeXZ",
+                    mesh: "plane",
                     material: "title-ufo",
-                    position: [170, 1, 15],
+                    position: [200, 70, 15],
                     rotation: 270
                 },
                 {
                     scaling: 75,
-                    mesh: "planeXZ",
+                    mesh: "plane",
                     material: "title-cars",
-                    position: [-15, 1, -175],
+                    position: [-15, 70, -200],
                     rotation: 0
                 }
             ],
