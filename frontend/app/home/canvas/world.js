@@ -233,7 +233,7 @@ export const world = [
             setParams: function (params) {
                 this.params.a.value = params.a;
                 this.params.v0.value = params.v0;
-                this.params.alpha = params.alpha;
+                this.params.alpha.value = params.alpha;
             },
 
             dynamic_objects: [
