@@ -24,7 +24,6 @@ https://ecv-etic.upf.edu/node/9011/
 
 # todo
 bug dos tabs same screen
-target overlaps girl
 cars: use the full room, dont have everything in the back... and use 3D, dont have everything parallel to the blackboard
 parabolic: use the full room, dont have everything in the back... and use 3D, dont have everything parallel to the blackboard
 no es respawneja al lobby

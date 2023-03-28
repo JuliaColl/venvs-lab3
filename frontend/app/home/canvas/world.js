@@ -333,7 +333,7 @@ export const world = [
                     scaling: 30,
                     mesh: "planeXZ",
                     material: "target",
-                    position: [-70, 10, -130],
+                    position: [-70, 0.5, -130],
                     rotation: 50
                 }
             ],
@@ -399,11 +399,11 @@ export const world = [
             dynamic_objects: [
                 {
                     velocity: [0, 0, 0],
-                    position: [-150, 10, -130],
+                    position: [-150, 0, -130],
                     running: false,
 
                     node: {
-                        position: [-150, 10, -130],
+                        position: [-150, 0, -130],
                         gltf: "data/assets/raceFuture.glb",     //TODO deploy
                         scaling: 7,
                         name: "car1",
@@ -439,11 +439,11 @@ export const world = [
                 },
                 {
                     velocity: [0, 0, 0],
-                    position: [170, 10, -130],
+                    position: [170, 0, -130],
                     running: false,
 
                     node: {
-                        position: [170, 10, -130],
+                        position: [170, 0, -130],
                         gltf: "data/assets/race.glb",  //TODO deploy
                         //material: "atlas",
                         scaling: 7,
