@@ -118,7 +118,7 @@ export const world = [
                 position: [-202, 15],
                 size: [70, 30],
                 toRoomId: 0,
-                spawnPos: [34, 90],
+                spawnPos: [100, 20],
             }
         ],
 

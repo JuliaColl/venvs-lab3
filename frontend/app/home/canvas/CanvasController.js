@@ -55,14 +55,15 @@ export class CanvasController {
             this.scene.clear();
             this._experimentParamsController.clearParams();
 
+            this._ws.joinRoom(exit.toRoomId, exit.spawnPos);
+            this.myUser.setPosition(exit.spawnPos);
+
             this.myUser.currentRoom = exit.toRoomId;
             this.currentRoom = this.rooms[exit.toRoomId];
             this.currentRoom.removeAllUsers();
             this.currentRoom.addUser(this.myUser.username, this.myUser);
             this.addUserToScene(this.myUser);
 
-            this._ws.joinRoom(exit.toRoomId, exit.spawnPos);
-            this.myUser.setPosition(exit.spawnPos);
 
             this._leaveRoomOverlayView.hide();
 
@@ -599,7 +600,6 @@ export class CanvasController {
 
     onUserJoinedRoom = (roomId, username, avatar, position) => {
         const newUser = new User(username, avatar, 0.3); 
-        console.log("---", avatar)
         newUser.setPosition(position);
         this.currentRoom.addUser(username, newUser);
         this.addUserToScene(newUser)
@@ -700,7 +700,7 @@ export class CanvasController {
 
         //create pivot point for the girl
         var girl_pivot = new RD.SceneNode({
-            position: [-40, 0, -40],
+            position: user.get3DPosition(),
             id: user.username
         });
 
