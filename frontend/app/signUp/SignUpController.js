@@ -15,6 +15,7 @@ export class SignUpController {
         const username = this._signUpView.username;
         const password = this._signUpView.password;
         const avatar = this._signUpView.avatar;
+        console.log(avatar)
 
         const signUpResult = await RestClient.signUp(username, password, avatar);
         if (signUpResult.status !== 200) {

@@ -134,7 +134,7 @@ export class CanvasController {
     onLogin = ({ username, avatar }, token) => {
 
         //this.myUser = new User(username, avatar, avatar_scale);   //TODO set avatar and avatar_scale from backend
-        this.myUser = new User(username, "girl", 0.3);
+        this.myUser = new User(username, avatar, 0.3);
 
         autoReconnect(() => {
             this._ws = new WsClient(token);
@@ -207,8 +207,8 @@ export class CanvasController {
             anim.load(url);
             return anim;
         }
-        loadAnimation("idle", "data/" + this.myUser.avatar + "/idle.skanim");
-        loadAnimation("walking", "data/" + this.myUser.avatar + "/walking.skanim");
+        loadAnimation("idle", "data/girl/idle.skanim");
+        loadAnimation("walking", "data/girl/walking.skanim");
         //loadAnimation("dance","data/girl/dance.skanim");
 
         /*
@@ -598,7 +598,8 @@ export class CanvasController {
     });
 
     onUserJoinedRoom = (roomId, username, avatar, position) => {
-        const newUser = new User(username, "girl", 0.3);  // TODO add avatar
+        const newUser = new User(username, avatar, 0.3); 
+        console.log("---", avatar)
         newUser.setPosition(position);
         this.currentRoom.addUser(username, newUser);
         this.addUserToScene(newUser)
@@ -612,7 +613,7 @@ export class CanvasController {
         this.addCurrentRoomToScene();
 
         users.forEach(({ username, avatar, position }) => {
-            this.currentRoom.addUser(username, new User(username, "girl", 0.3));  //todo add avatar 
+            this.currentRoom.addUser(username, new User(username, avatar, 0.3));  //todo add avatar 
             const user = this.currentRoom.users[username];
             user.setPosition(position);   //TODO check
             this.addUserToScene(user)
@@ -692,10 +693,10 @@ export class CanvasController {
         //create material for the girl
         var mat = new RD.Material({
             textures: {
-                color: "girl/girl.png"
+                color: `girl/${user.avatar}.png`
             }
         });
-        mat.register("girl");
+        mat.register(`girl/${user.avatar}.png`);
 
         //create pivot point for the girl
         var girl_pivot = new RD.SceneNode({
@@ -706,8 +707,8 @@ export class CanvasController {
         //create a mesh for the girl
         var girl = new RD.SceneNode({
             scaling: user.avatar_scale,
-            mesh: user.avatar + "/" + user.avatar + ".wbin",
-            material: "girl",
+            mesh: "girl/girl.wbin",
+            material: `girl/${user.avatar}.png`,
             id: user.username + "_character"
         });
 
