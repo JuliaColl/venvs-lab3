@@ -176,7 +176,7 @@ export const world = [
                 a:
                 {
                     value: -9.89,
-                    description: "Acceleration (u/&sup2;)",
+                    description: "Acceleration (u/s&sup2;)",
                     id: 'a',
                     minValue: null,
                     maxValue: null,
@@ -343,7 +343,7 @@ export const world = [
                 a1:
                 {
                     value: 2,
-                    description: "Acceleration blue car (u/&sup2;)",
+                    description: "Acceleration blue car (u/s&sup2;)",
                     id: 'a1',
                     minValue: null,
                     maxValue: null,
@@ -353,7 +353,7 @@ export const world = [
                 a2:
                 {
                     value: -3,
-                    description: "Acceleration red car (u/&sup2;)",
+                    description: "Acceleration red car (u/s&sup2;)",
                     id: 'a2',
                     minValue: null,
                     maxValue: null,
@@ -542,7 +542,7 @@ export const world = [
                 a:
                 {
                     value: -9.89,
-                    description: "Acceleration (u/&sup2;)",
+                    description: "Acceleration (u/s&sup2;)",
                     id: 'a',
                     minValue: null,
                     maxValue: null,
