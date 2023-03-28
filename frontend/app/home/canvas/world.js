@@ -269,8 +269,8 @@ export const world = [
                     reset: function (params) {
                         this.node.position = [...this.position];
                         this.velocity = [
-                            params.v0.value * Math.cos(params.alpha),
-                            params.v0.value * Math.sin(params.alpha),
+                            params.v0.value * Math.cos(params.alpha.value),
+                            params.v0.value * Math.sin(params.alpha.value),
                             0
                         ];
                     },
