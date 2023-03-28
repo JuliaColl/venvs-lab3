@@ -24,7 +24,6 @@ https://ecv-etic.upf.edu/node/9011/
 
 # todo
 bug dos tabs same screen
-avatars
 al cambiar la room algun param es undefined
 target overlaps girl
 cars: use the full room, dont have everything in the back... and use 3D, dont have everything parallel to the blackboard
@@ -32,7 +31,9 @@ parabolic: use the full room, dont have everything in the back... and use 3D, do
 no es respawneja al lobby
 no es respawneja a la posicio a on estaves
 al cambiar d room no sespawneja a prop d la porta
-
+second user to come to room does not see other players
+when u join a room, users always are at the spawn position and dont move to their real position
+syncronization with multiple users not working properly
 
 # credits
 "Chalkboard" (https://skfb.ly/6GztC) by hellfa is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
