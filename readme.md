@@ -26,9 +26,7 @@ https://ecv-etic.upf.edu/node/9011/
 bug dos tabs same screen
 cars: use the full room, dont have everything in the back... and use 3D, dont have everything parallel to the blackboard
 parabolic: use the full room, dont have everything in the back... and use 3D, dont have everything parallel to the blackboard
-al cambiar d room no sespawneja a prop d la porta
 second user to come to room does not see other players
-when u join a room, users always are at the spawn position and dont move to their real position
 syncronization with multiple users not working properly
 remove commented out code
 
