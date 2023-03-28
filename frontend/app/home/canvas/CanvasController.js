@@ -272,7 +272,7 @@ export class CanvasController {
                 var smoothtarget = vec3.lerp(vec3.create(), this.camera.target, camtarget, 0.1);
 
                 this.camera.perspective(60, gl.canvas.width / gl.canvas.height, 0.1, 1000);
-                const initialPosition = [0, 70, 100];
+                const initialPosition = [0, 70, 200];
                 this.camera.lookAt(initialPosition, girlpos, [0, 1, 0]);
                 this.camera.moveLocal([0, 0, this.zoom]);
             }
@@ -444,6 +444,7 @@ export class CanvasController {
 
                 if (ray.testPlane(RD.ZERO, RD.UP)) //collision with infinite plane
                 {
+                    console.log(ray.collision_point);
                     // update target position of my user
                     const myNodeSceneUser = this.scene.getNodeById(this.myUser.username)
                     if (myNodeSceneUser){

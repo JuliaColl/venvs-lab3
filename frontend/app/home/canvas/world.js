@@ -9,19 +9,19 @@ export const world = [
                 position: [-202, 15],
                 size: [80, 30],
                 toRoomId: 1,
-                spawnPos: [34, 90],
+                spawnPos: [-160, 15],
             },
             {
-                position: [15, -202],
-                size: [80, 30],
+                position: [-15, -200],
+                size: [50, 80],
                 toRoomId: 2,
-                spawnPos: [34, 90],
+                spawnPos: [-160, 15],
             },
             {
                 position: [202, 15],
                 size: [80, 30],
                 toRoomId: 3,
-                spawnPos: [34, 90],
+                spawnPos: [-160, 15],
             }
         ],
 
@@ -118,7 +118,7 @@ export const world = [
                 position: [-202, 15],
                 size: [70, 30],
                 toRoomId: 0,
-                spawnPos: [100, 20],
+                spawnPos: [-160, 15],
             }
         ],
 
@@ -289,7 +289,7 @@ export const world = [
                 position: [-202, 15],
                 size: [70, 30],
                 toRoomId: 0,
-                spawnPos: [34, 90],
+                spawnPos: [-15, -160],
             }
         ],
 
@@ -320,7 +320,7 @@ export const world = [
                     scaling: 50,
                     mesh: "assets/door.obj",
                     material: "red_door",
-                    position: [-202, 0, 0],
+                    position: [-205, 0, 0],
                     rotation: 90
                 },
                 {
@@ -492,7 +492,7 @@ export const world = [
                 position: [-202, 15],
                 size: [70, 30],
                 toRoomId: 0,
-                spawnPos: [34, 90],
+                spawnPos: [170, 20],
             }
         ],
 
@@ -519,7 +519,7 @@ export const world = [
                     scaling: 50,
                     mesh: "assets/door.obj",
                     material: "blue_door",
-                    position: [-202, 0, 0],
+                    position: [-205, 0, 0],
                     rotation: 90
                 },
                 {
