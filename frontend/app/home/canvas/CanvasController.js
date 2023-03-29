@@ -82,8 +82,10 @@ export class CanvasController {
 
         this._runView = new RunExperimentOverlayView();
         this._runView.onRun = () => {
-            this._ws?.runExperiment();
-            this.doRunExperiment();
+            if (this._experimentParamsController.isValid()) {
+                this._ws?.runExperiment();
+                this.doRunExperiment();
+            }
         }
 
         this._measuringView = new MeasuringTapeOverlayView();
@@ -107,13 +109,11 @@ export class CanvasController {
     };
 
     doRunExperiment = () => {
-        if (this._experimentParamsController.isValid()) {
             const values = this._experimentParamsController.getValues()
             const demo = this.currentRoom.demo;
             demo.setParams(values);
             demo.reset()
             demo.start()
-        }
     }
 
     show = () => {
@@ -621,6 +621,12 @@ export class CanvasController {
         this.addUserToScene(newUser)
 
         console.log(`User ${username} joined the room ${roomId}`)
+
+        const params = this._experimentParamsController.getValues();
+        Object.keys(params).forEach(paramId => {
+            this._ws.sendParams(paramId, params[paramId])
+        })
+        
     }
 
     initCurrentRoom = (roomId, users) => {
