@@ -96,16 +96,6 @@ export class CanvasController {
         this._measuringView.onStopMeasure = () => {
             this._isMeasuring = false;
         }
-
-        document.addEventListener("visibilitychange", () => {
-            if (document.visibilityState === 'visible') {
-                if (!this.currentRoom) return;
-                for (let username in this.currentRoom.users) {
-                    const user = this.currentRoom.users[username];
-                    user.position = user.target; // TODO
-                }
-            }
-        });
     };
 
     doRunExperiment = () => {
@@ -197,10 +187,6 @@ export class CanvasController {
 
         //global settings
         var bg_color = [1, 1, 1, 1];
-        //var avatar = "girl";
-        //var avatar_scale = 0.3;
-        //var avatar = "tiger";
-        //var avatar_scale = 1.5;
 
         //load some animations
         const loadAnimation = (name, url) => {
@@ -210,53 +196,6 @@ export class CanvasController {
         }
         loadAnimation("idle", "data/girl/idle.skanim");
         loadAnimation("walking", "data/girl/walking.skanim");
-        //loadAnimation("dance","data/girl/dance.skanim");
-
-        
-
-        /*
-        //load a GLTF for the room
-        var room = new RD.SceneNode({ scaling: 40, position: [0, -.01, 0] });
-        room.loadGLTF("data/room.gltf");
-        this.scene.root.addChild(room);
-        */
-        /*
-        var gizmo = new RD.Gizmo();
-        gizmo.mode = RD.Gizmo.ALL;
-        */
-        /*
-        //create sphere
-        var box = new RD.SceneNode({
-            position: [0, 10, 0],
-            mesh: "cube",
-            color: [1, 0, 0, 1],
-            scaling: [10, 10, 10],
-            name: "parabolic",
-        });
-
-        //box.shader = "phong";
-        this.scene.root.addChild(box);
-        */
-        /*
-        // load door
-         //create material for the girl
-         var mat = new RD.Material({
-            textures: {
-                color: "assets/green.png"
-            }
-        });
-        mat.register("green_door");
-
-        var door = new RD.SceneNode({
-            scaling: 50,
-            mesh: "assets/door.obj",
-            material: "green_door",
-            position: [-200, 0, 0],
-        });
-        door.rotate(90*DEG2RAD, RD.UP)
-        //door.setEulerRotation(0.2, RD.UP);
-        this.scene.root.addChild(door);
-        */
 
         // main loop ***********************
 
@@ -291,21 +230,9 @@ export class CanvasController {
                 let z = this._measureStartPosition[2];
                 let x2 = myNodeSceneUser.position[0];
                 let z2 = myNodeSceneUser.position[2];
-                //this.renderer.drawLine2D(x,y, x2,y2, 20, [1,0,0]);
-                //this.renderer.drawLine2D(0,0, 500, 500, 50, [1,0,0]);
-                //this.renderer.drawLine(this._measureStartPosition, myNodeSceneUser.position, 20, [1,0,0]);
 
                 this.renderer.renderPoints(new Float32Array([x,0,z, x2,0,z2]), null, this.camera, null, null, null, gl.LINES, vec4.fromValues(0,0,0,1));
-
             }
-
-            /*
-            var vertices = this.walkarea?.getVertices();
-            this.renderer.renderPoints(vertices, null, this.camera, null, null, null, gl.LINES);
-            */
-
-            //gizmo.setTargets([monkey]);
-            //this.renderer.render( this.scene, this.camera, [gizmo] ); //render gizmo on top
 
             // shader
             if (this.useSsao) {
@@ -500,101 +427,20 @@ export class CanvasController {
         context.animate();
     }
 
-
-    /*
-    update = (dt) => {
-        if (this.currentRoom === null) return;
-    
-        const myUsername = this.myUser.username
-        const myUserPosition = this.myUser.getPosition()
-    
-        const CAN_HEAR_CHAT_RANGE = 250;  // todo import from backend
-        for (let username in this.currentRoom.users) {
-            const user = this.currentRoom.users[username];
-            user.updatePos(dt);
-    
-            if (username !== myUsername) {
-                const position = user.getPosition()
-                user.tooFar = Math.hypot(position[0] - myUserPosition[0], position[1] - myUserPosition[1]) > CAN_HEAR_CHAT_RANGE;
-            }
-        }
-    
-        if (this.myUser && this.myUser.animation === "walking") {
-            this.updateRoom();
-    
-        }
-    
-        this.updateOffset();
-    
-    };
-    
-    updateRoom = () => {
-        const exit = this.currentRoom.getExit(this.myUser.position);
-        if (!exit) {
-            this._leaveRoomOverlayView.hide();
-            this._hasLeaveRoomDialogBeenDismissed = false;
-            return;
-        };
-        if (this._hasLeaveRoomDialogBeenDismissed) return;
-        this._leaveRoomOverlayView.show();
-    };
-    
-    */
-
     _initRooms = async () => {
         // create the rooms
         world.map(room => new Room(room)).forEach((room) => { this.rooms[room.id] = room; });
     };
 
-    onMouse = (e) => {
-
-        /*
-        var rect = this._canvasView.getBoundingClientRect();
-        this.mousePosition[0] = e.clientX - rect.left;
-        this.mousePosition[1] = e.clientY - rect.top;
-    
-        if (e.type == "mousedown") {
-    
-            const worldPosition = this._canvasView.canvasToWorld(
-                [this.mousePosition[0], this.mousePosition[1]],
-                this.camOffset
-            );
-    
-            const clampedWorldPosition = this.currentRoom.clampToRoom(worldPosition);
-    
-            this.myUser.setTarget(clampedWorldPosition);
-    
-            if (this.myUser) {
-                const target = this.myUser.getTarget();
-                this._ws.sendTarget(target);
-    
-            }
-        }
-        */
-
-    };
-
     setLatestState = (roomId, username, position) => {
-
         console.log(`My client id: ${username}. Latest state: ${position} @ ${roomId}`)
-
         roomId = roomId ?? 0;
-
         this.currentRoom = this.rooms[roomId];
-
         position = position ? position : [0, 0];
-
         this._ws.joinRoom(roomId, position);
-
         this.myUser.setPosition(position);
-
-        //this.camOffset = [-position[0], -position[1], 0];  // TODO update in 3D
-
         this.currentRoom.addUser(username, this.myUser);
         this.addUserToScene(this.myUser)
-        //add room to the scene
-        //this.addCurrentRoomToScene();
-        //console.log(this.scene);
     };
 
     setOtherUserTarget = (srcUsername, targetPos) => {
@@ -616,6 +462,7 @@ export class CanvasController {
 
     onUserJoinedRoom = (roomId, username, avatar, position) => {
         const newUser = new User(username, avatar, 0.3);
+        console.log("position", position)
         newUser.setPosition(position);
         this.currentRoom.addUser(username, newUser);
         this.addUserToScene(newUser)
@@ -684,9 +531,6 @@ export class CanvasController {
 
         })
 
-        //var dynamic_object = new RD.SceneNode(demo.dynamic_object.node);
-        //this.scene.root.addChild(dynamic_object);
-
         demo.dynamic_objects.forEach((object) => {
             var dynamic_object = new RD.SceneNode(object.node);
             if (object.node.rotation) {
@@ -748,9 +592,6 @@ export class CanvasController {
         });
 
         girl_pivot.addChild(girl_selector);
-
-
-        //this.character = girl;  //TODO animation
     }
 
 }
