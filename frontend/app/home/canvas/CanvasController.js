@@ -230,7 +230,6 @@ export class CanvasController {
                 let z = this._measureStartPosition[2];
                 let x2 = myNodeSceneUser.position[0];
                 let z2 = myNodeSceneUser.position[2];
-
                 this.renderer.renderPoints(new Float32Array([x,0,z, x2,0,z2]), null, this.camera, null, null, null, gl.LINES, vec4.fromValues(0,0,0,1));
             }
 
