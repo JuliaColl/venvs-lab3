@@ -4141,7 +4141,7 @@ Renderer.prototype.setPointSize = function(v)
 * @param {GL.Shader} shader
 * @param {Number} point_size
 */
-RD.Renderer.prototype.renderPoints = function( positions, extra, camera, num_points, shader, point_size, primitive, texture, model )
+RD.Renderer.prototype.renderPoints = function( positions, extra, camera, num_points, shader, point_size, primitive, color, texture, model )
 {
 	if(!positions || positions.constructor !== Float32Array)
 		throw("RD.renderPoints only accepts Float32Array");
@@ -4206,7 +4206,7 @@ RD.Renderer.prototype.renderPoints = function( positions, extra, camera, num_poi
 		extra_data.fill(0);
 	mesh.upload( GL.DYNAMIC_STREAM );
 
-	shader.setUniform( "u_color", this._color );
+	shader.setUniform( "u_color", color );
 	shader.setUniform( "u_pointSize", point_size );
 	shader.setUniform( "u_camera_perspective", camera._projection_matrix[5] );
 	shader.setUniform( "u_model", model || RD.IDENTITY ); 
@@ -4857,6 +4857,42 @@ Renderer.prototype.drawLine2D = function( x,y, x2,y2, width, color, shader )
 	shader.setUniform("u_model",m);
 	shader.draw( mesh );
 	this.draw_calls += 1;
+}
+
+Renderer.prototype.drawLine = function( v1, v2, width, color )
+{
+	//var mesh = GL.Mesh.load({ vertices: [v1[0],v1[1],v1[2], v2[0],v2[1],v2[2]], 
+	//	colors: [1,0,0,1, 1,0,0,1 ] }); 
+
+	var mesh = GL.Mesh.load({ vertices: [0,0,0, v2[0],0,v2[2]], 
+		colors: [1,0,0,1, 1,0,0,1] }); 
+
+
+	//basic phong shader
+	var shader = new Shader('\
+		precision highp float;\
+		attribute vec3 a_vertex;\
+		attribute vec4 a_color;\
+		uniform mat4 u_mvp;\
+		varying vec4 v_color;\
+		void main() {\
+			v_color = a_color;\
+			gl_Position = u_mvp * vec4(a_vertex,1.0);\
+		}\
+		', '\
+		precision highp float;\
+		uniform vec4 u_color;\
+		varying vec4 v_color;\
+		void main() {\
+			gl_FragColor = u_color * v_color;\
+		}\
+	');
+
+	if(mesh)
+				shader.uniforms({
+					u_color: [1,1,1,1],
+					u_mvp: this._mvp_matrix
+				}).draw(mesh, gl.LINES);
 }
 
 Renderer.prototype.renderDebugSceneTree = function( scene, camera )

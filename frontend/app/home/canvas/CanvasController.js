@@ -75,7 +75,7 @@ export class CanvasController {
 
         this._experimentParamsController = new ExperimentParamsController();
         this._experimentParamsController.onValue = (id, value) => this._ws.sendParams(id, value)
-        
+
         this._canvasView = new CanvasView();
         this._canvasView.onMouse = this.onMouse;
         this._initRooms();
@@ -107,7 +107,7 @@ export class CanvasController {
     };
 
     doRunExperiment = () => {
-        if(this._experimentParamsController.isValid()){
+        if (this._experimentParamsController.isValid()) {
             const values = this._experimentParamsController.getValues()
             const demo = this.currentRoom.demo;
             demo.setParams(values);
@@ -212,6 +212,8 @@ export class CanvasController {
         loadAnimation("walking", "data/girl/walking.skanim");
         //loadAnimation("dance","data/girl/dance.skanim");
 
+        
+
         /*
         //load a GLTF for the room
         var room = new RD.SceneNode({ scaling: 40, position: [0, -.01, 0] });
@@ -265,7 +267,7 @@ export class CanvasController {
             gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
 
             const myNodeSceneUser = this.scene.getNodeById(this.myUser.username)
-            if (myNodeSceneUser){
+            if (myNodeSceneUser) {
                 var girlpos = myNodeSceneUser.localToGlobal([0, 40, 0]);
                 var campos = myNodeSceneUser.localToGlobal([0, 60, -70]);
                 var camtarget = myNodeSceneUser.localToGlobal([0, 10, 70]);
@@ -276,13 +278,26 @@ export class CanvasController {
                 this.camera.lookAt(initialPosition, girlpos, [0, 1, 0]);
                 this.camera.moveLocal([0, 0, this.zoom]);
             }
-            
-            
+
 
             //clear
             this.renderer.clear(bg_color);
             //render scene
             this.renderer.render(this.scene, this.camera, null, 0b11);
+
+            //draw measure
+            if (this._isMeasuring) {
+                let x = this._measureStartPosition[0];
+                let z = this._measureStartPosition[2];
+                let x2 = myNodeSceneUser.position[0];
+                let z2 = myNodeSceneUser.position[2];
+                //this.renderer.drawLine2D(x,y, x2,y2, 20, [1,0,0]);
+                //this.renderer.drawLine2D(0,0, 500, 500, 50, [1,0,0]);
+                //this.renderer.drawLine(this._measureStartPosition, myNodeSceneUser.position, 20, [1,0,0]);
+
+                this.renderer.renderPoints(new Float32Array([x,0,z, x2,0,z2]), null, this.camera, null, null, null, gl.LINES, vec4.fromValues(0,0,0,1));
+
+            }
 
             /*
             var vertices = this.walkarea?.getVertices();
@@ -353,7 +368,7 @@ export class CanvasController {
 
                 var anim = this.animations.idle;
 
-                if(!userNode){
+                if (!userNode) {
                     console.log(`user @${username} is not added to the scene!!!`)
                     continue;
                 }
@@ -374,17 +389,17 @@ export class CanvasController {
                         user.set3DTarget(userNode.position)
                     }
 
-                    if (this._isMeasuring){
+                    if (this._isMeasuring) {
                         let distance = 0;
-                        if (this._measureStartPosition == null){
+                        if (this._measureStartPosition == null) {
                             this._measureStartPosition = [...userNode.position];
                         } else {
                             distance = Math.round(Math.sqrt(
-                                Math.pow(userNode.position[0]-this._measureStartPosition[0], 2)
+                                Math.pow(userNode.position[0] - this._measureStartPosition[0], 2)
                                 +
-                                Math.pow(userNode.position[2]-this._measureStartPosition[2], 2)
-                                ) * this._MEASURE_PRECISION) / this._MEASURE_PRECISION
-                            ;
+                                Math.pow(userNode.position[2] - this._measureStartPosition[2], 2)
+                            ) * this._MEASURE_PRECISION) / this._MEASURE_PRECISION
+                                ;
                         }
                         this._measuringView.setMeasure(`${distance}u`);
                     }
@@ -397,34 +412,34 @@ export class CanvasController {
                 //move bones in the skeleton based on animation
                 anim.assignTime(t * 0.001 * time_factor);
                 //copy the skeleton in the animation to the character
-                var character =  this.scene.getNodeById(user.username + "_character")
+                var character = this.scene.getNodeById(user.username + "_character")
                 character.skeleton.copyFrom(anim.skeleton);
 
             }
 
 
-            if (this.currentRoom.demo){
+            if (this.currentRoom.demo) {
                 const demo = this.currentRoom.demo;
                 demo.update(dt);
                 demo.stop();
-                demo.dynamic_objects.forEach( (dynamic_object) => {
-                    if (dynamic_object.running){
+                demo.dynamic_objects.forEach((dynamic_object) => {
+                    if (dynamic_object.running) {
                         const node = this.scene.getNodeById(dynamic_object.node.id);
                         node.position = dynamic_object.node.position;
                     }
                 })
-                                
+
             }
 
-             // check exit
-             const exit = this.currentRoom.getExit(this.myUser.getPosition());
-             if (!exit) {
-                 this._leaveRoomOverlayView.hide();
-                 this._hasLeaveRoomDialogBeenDismissed = false;
-                 return;
-             };
-             if (this._hasLeaveRoomDialogBeenDismissed) return;
-             this._leaveRoomOverlayView.show();
+            // check exit
+            const exit = this.currentRoom.getExit(this.myUser.getPosition());
+            if (!exit) {
+                this._leaveRoomOverlayView.hide();
+                this._hasLeaveRoomDialogBeenDismissed = false;
+                return;
+            };
+            if (this._hasLeaveRoomDialogBeenDismissed) return;
+            this._leaveRoomOverlayView.show();
         }
 
         //user input ***********************
@@ -447,10 +462,10 @@ export class CanvasController {
                     console.log(ray.collision_point);
                     // update target position of my user
                     const myNodeSceneUser = this.scene.getNodeById(this.myUser.username)
-                    if (myNodeSceneUser){
+                    if (myNodeSceneUser) {
                         myNodeSceneUser.orientTo(ray.collision_point, [0, 1, 0])
                     }
-                    
+
                     this.myUser.set3DTarget(ray.collision_point)
 
                     //send new target to other users in the room
@@ -489,30 +504,30 @@ export class CanvasController {
     /*
     update = (dt) => {
         if (this.currentRoom === null) return;
-
+    
         const myUsername = this.myUser.username
         const myUserPosition = this.myUser.getPosition()
-
+    
         const CAN_HEAR_CHAT_RANGE = 250;  // todo import from backend
         for (let username in this.currentRoom.users) {
             const user = this.currentRoom.users[username];
             user.updatePos(dt);
-
+    
             if (username !== myUsername) {
                 const position = user.getPosition()
                 user.tooFar = Math.hypot(position[0] - myUserPosition[0], position[1] - myUserPosition[1]) > CAN_HEAR_CHAT_RANGE;
             }
         }
-
+    
         if (this.myUser && this.myUser.animation === "walking") {
             this.updateRoom();
-
+    
         }
-
+    
         this.updateOffset();
-
+    
     };
-
+    
     updateRoom = () => {
         const exit = this.currentRoom.getExit(this.myUser.position);
         if (!exit) {
@@ -523,8 +538,8 @@ export class CanvasController {
         if (this._hasLeaveRoomDialogBeenDismissed) return;
         this._leaveRoomOverlayView.show();
     };
-
-  */
+    
+    */
 
     _initRooms = async () => {
         // create the rooms
@@ -537,22 +552,22 @@ export class CanvasController {
         var rect = this._canvasView.getBoundingClientRect();
         this.mousePosition[0] = e.clientX - rect.left;
         this.mousePosition[1] = e.clientY - rect.top;
-
+    
         if (e.type == "mousedown") {
-
+    
             const worldPosition = this._canvasView.canvasToWorld(
                 [this.mousePosition[0], this.mousePosition[1]],
                 this.camOffset
             );
-
+    
             const clampedWorldPosition = this.currentRoom.clampToRoom(worldPosition);
-
+    
             this.myUser.setTarget(clampedWorldPosition);
-
+    
             if (this.myUser) {
                 const target = this.myUser.getTarget();
                 this._ws.sendTarget(target);
-
+    
             }
         }
         */
@@ -600,7 +615,7 @@ export class CanvasController {
     });
 
     onUserJoinedRoom = (roomId, username, avatar, position) => {
-        const newUser = new User(username, avatar, 0.3); 
+        const newUser = new User(username, avatar, 0.3);
         newUser.setPosition(position);
         this.currentRoom.addUser(username, newUser);
         this.addUserToScene(newUser)
@@ -621,7 +636,7 @@ export class CanvasController {
         })
 
         const params = this.currentRoom.demo.params
-        if (params){
+        if (params) {
             this._experimentParamsController.show();
             this._runView.show();
             this._measuringView.show();
@@ -631,7 +646,7 @@ export class CanvasController {
             this._runView.hide();
             this._measuringView.hide();
         }
-        
+
     }
 
     addCurrentRoomToScene = () => {
@@ -671,7 +686,7 @@ export class CanvasController {
             if (object.node.rotation) {
                 dynamic_object.rotate(object.node.rotation * DEG2RAD, RD.UP)
             }
-            if(object.node.gltf){
+            if (object.node.gltf) {
                 dynamic_object.loadGLTF(object.node.gltf);
             }
             this.scene.root.addChild(dynamic_object);
@@ -682,7 +697,7 @@ export class CanvasController {
             if (rotation) {
                 static_object.rotate(rotation * DEG2RAD, RD.UP)
             }
-            if(gltf){
+            if (gltf) {
                 static_object.loadGLTF(gltf);
             }
             this.scene.root.addChild(static_object);
