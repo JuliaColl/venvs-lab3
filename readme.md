@@ -24,10 +24,10 @@ https://ecv-etic.upf.edu/node/9011/
 
 # todo
 bug dos tabs same screen
+
 cars: use the full room, dont have everything in the back... and use 3D, dont have everything parallel to the blackboard
 parabolic: use the full room, dont have everything in the back... and use 3D, dont have everything parallel to the blackboard
-second user to come to room does not see other players
-syncronization with multiple users not working properly
+
 remove commented out code
 
 
