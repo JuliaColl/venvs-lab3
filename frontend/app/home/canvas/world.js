@@ -624,6 +624,10 @@ export const world = [
                     this.dynamic_objects[0].stop();
                     this.isCorrect();
                 }
+
+                if(Math.abs(this.dynamic_objects[0].velocity[1]) < 1){
+                    
+                }
             },
             
 
@@ -651,9 +655,22 @@ export const world = [
             },
 
             isCorrect: function (){
-                             
-            },
+                const a = this.params.a.value;
+                const v0 = this.params.v0.value;
 
+                // v = v0 + a * tt
+                const tt = (-v0 / a); 
+                if (tt < 0) return false;
+
+                // y = y0 + v0 * tt + g * 1/2 * tt * tt
+                const y = v0 * tt + 1/2 * a * tt * tt;
+
+                const dif = Math.abs( y - this.static_objects[2].position[1]);
+                if(dif > 5) return false
+                
+                return true;                
+            },
+            
             dynamic_objects: [
                 {
                     velocity: [0,0,0],
