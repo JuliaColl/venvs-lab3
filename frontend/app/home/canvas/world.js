@@ -398,6 +398,7 @@ export const world = [
                 if ( diff < 5){     //todo check if 5 is the best offset
                     this.dynamic_objects[0].stop();
                     this.dynamic_objects[1].stop();
+                    this.isCorrect();
                 }
             },
             
@@ -423,6 +424,33 @@ export const world = [
             setParams: function (params) {
                 this.params.a1.value = params.a1;
                 this.params.a2.value = params.a2;
+            },
+
+            isCorrect: function (){
+                const a1 = this.params.a1.value;
+                const a2 = this.params.a2.value;
+
+                /*
+                x1 = x0_1 + v0_1 * tt + 1/2 * a1 * tt * tt = x0_1  + 1/2 * a1 * tt * tt
+                x2 = x0_2 + v0_2 * tt + 1/2 * a2 * tt * tt = x0_2  + 1/2 * a2 * tt * tt
+                x1 = x2 
+                then x0_1  + 1/2 * a1 * tt * tt = x0_2  + 1/2 * a2 * tt * tt
+                tt * tt = (x0_2 - x0_1) / (1/2 * a1 - 1/2 * a2)
+                */
+                const x0_1 = this.dynamic_objects[0].position[0];
+                const x0_2 = this.dynamic_objects[1].position[0];
+
+                const tt2 = (x0_2 - x0_1) / (1/2 * a1 - 1/2 * a2);
+                if (tt2 < 0) return false;
+                
+                var tt = Math.sqrt(tt2);
+
+                const x = x0_1 + 1/2 * a1 * tt * tt;
+
+                const dif = Math.abs( x - this.static_objects[2].position[0]);
+                if(dif > 5) return false
+                
+                return true;                
             },
 
             dynamic_objects: [
@@ -594,6 +622,7 @@ export const world = [
             stop: function () {
                 if (this.dynamic_objects[0].node.position[1] < 1) {
                     this.dynamic_objects[0].stop();
+                    this.isCorrect();
                 }
             },
             
@@ -619,6 +648,10 @@ export const world = [
             setParams: function (params) {
                 this.params.a.value = params.a;
                 this.params.v0.value = params.v0;
+            },
+
+            isCorrect: function (){
+                             
             },
 
             dynamic_objects: [
