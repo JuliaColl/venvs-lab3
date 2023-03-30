@@ -11,6 +11,7 @@ import { ExperimentParamsController } from "../experimentParams/ExperimentParams
 import { world } from './world.js';
 import { RunExperimentOverlayView } from "./runExperimentOverlayView.js";
 import { MeasuringTapeOverlayView } from "./MeasuringTapeOverlayView.js";
+import { CheckExperimentOverlayView } from "./CheckExperimentOverlayView.js";
 
 export class CanvasController {
     messageInputOverlayController = null;
@@ -87,6 +88,11 @@ export class CanvasController {
                 this.doRunExperiment();
             }
         }
+        this._runView.onReset = () => {
+
+            this._ws?.resetExperiment();
+            this.doResetExperiment();
+        }
 
         this._measuringView = new MeasuringTapeOverlayView();
         this._measuringView.onStartMeasure = () => {
@@ -96,6 +102,9 @@ export class CanvasController {
         this._measuringView.onStopMeasure = () => {
             this._isMeasuring = false;
         }
+
+        this._checkExperimentView = new CheckExperimentOverlayView();
+
     };
 
     doRunExperiment = () => {
@@ -104,7 +113,13 @@ export class CanvasController {
             demo.setParams(values);
             demo.reset()
             demo.start()
-    }
+
+            if(demo.isCorrect()){
+                this._checkExperimentView.viewCorrectExperiment();
+            }
+    };
+
+    doResetExperiment = () => {this.currentRoom.demo.reset()};
 
     show = () => {
         this._canvasView.show();
@@ -118,6 +133,7 @@ export class CanvasController {
         this._experimentParamsController.hide();
         this._runView.hide();
         this._measuringView.hide();
+        this._checkExperimentView.hide();
     }
 
     useSsao = false;
@@ -159,6 +175,7 @@ export class CanvasController {
             this._ws.onClientJoinedRoom = (roomId, { username, avatar, position }) => this.onUserJoinedRoom(roomId, username, avatar, position);
             this._ws.onRoomSummary = ({ roomId, users }) => this.initCurrentRoom(roomId, users);
             this._ws.onRun = this.doRunExperiment;
+            this._ws.onResetExperiment = this.doResetExperiment;
             this._ws.onParamUpdated = ({ id, value }) => this._experimentParamsController.setValue(id, value)
             return this._ws;
         })
@@ -348,11 +365,12 @@ export class CanvasController {
                 const demo = this.currentRoom.demo;
                 demo.update(dt);
                 demo.stop();
+                
+                
                 demo.dynamic_objects.forEach((dynamic_object) => {
-                    if (dynamic_object.running) {
-                        const node = this.scene.getNodeById(dynamic_object.node.id);
-                        node.position = dynamic_object.node.position;
-                    }
+                    const node = this.scene.getNodeById(dynamic_object.node.id);
+                    node.position = dynamic_object.node.position;
+
                 })
 
             }

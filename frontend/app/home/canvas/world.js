@@ -208,8 +208,6 @@ export const world = [
             stop: function () {
                 if (this.dynamic_objects[0].node.position[1] < -1) {
                     this.dynamic_objects[0].stop();
-                    this.isCorrect();
-
                 }
             },
             
@@ -398,8 +396,11 @@ export const world = [
                 if ( diff < 5){     //todo check if 5 is the best offset
                     this.dynamic_objects[0].stop();
                     this.dynamic_objects[1].stop();
-                    this.isCorrect();
+                    //return this.isCorrect();
+
                 }
+                
+                //return false
             },
             
 
@@ -419,6 +420,8 @@ export const world = [
                 this.dynamic_objects.forEach((dynamic_object) => {
                     dynamic_object.reset(this.params);
                 })
+
+                console.log("reset")
             },
 
             setParams: function (params) {
@@ -622,12 +625,10 @@ export const world = [
             stop: function () {
                 if (this.dynamic_objects[0].node.position[1] < 1) {
                     this.dynamic_objects[0].stop();
-                    this.isCorrect();
+                    //return this.isCorrect();
                 }
 
-                if(Math.abs(this.dynamic_objects[0].velocity[1]) < 1){
-                    
-                }
+                //return false;
             },
             
 
