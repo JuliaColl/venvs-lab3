@@ -1,5 +1,5 @@
 import { WS_SERVER_URI } from "../config.js";
-import { ROOM_SUMMARY_MESSAGE_TYPE, SEND_MESSAGE_COMMAND,  LATEST_STATE_COMMAND, MESSAGE_COMMAND, LEFT_ROOM_COMMAND, JOINED_ROOM_COMMAND, JOIN_ROOM_COMMAND, TARGET_MESSAGE_TYPE, CHAT_MESSAGE_TYPE, AUDIO_MESSAGE_TYPE, RUN_MESSAGE_TYPE, PARAMS_MESSAGE_TYPE } from "./COMMAND.js";
+import { ROOM_SUMMARY_MESSAGE_TYPE, SEND_MESSAGE_COMMAND,  LATEST_STATE_COMMAND, MESSAGE_COMMAND, LEFT_ROOM_COMMAND, JOINED_ROOM_COMMAND, JOIN_ROOM_COMMAND, TARGET_MESSAGE_TYPE, CHAT_MESSAGE_TYPE, AUDIO_MESSAGE_TYPE, RUN_MESSAGE_TYPE, RESET_MESSAGE_TYPE, PARAMS_MESSAGE_TYPE } from "./COMMAND.js";
 
 export class WsClient {  
     onCommand = null;
@@ -15,6 +15,7 @@ export class WsClient {
     onRoomSummary = null;
     onError = null;
     onRun = null;
+    onResetExperiment = null;
     onParamUpdated = null;
 
     constructor(token) {
@@ -47,6 +48,7 @@ export class WsClient {
             if (command === MESSAGE_COMMAND && body.message.type === AUDIO_MESSAGE_TYPE) this.onAudioMessage(body)
             if (command === MESSAGE_COMMAND && body.message.type === ROOM_SUMMARY_MESSAGE_TYPE) this.onRoomSummary(body.message.content)
             if (command === MESSAGE_COMMAND && body.message.type === RUN_MESSAGE_TYPE) this.onRun()
+            if (command === MESSAGE_COMMAND && body.message.type === RESET_MESSAGE_TYPE) this.onResetExperiment()
             if (command === MESSAGE_COMMAND && body.message.type === PARAMS_MESSAGE_TYPE) {
                 
                 console.log("received", body.message.content.id, body.message.content.value)
@@ -110,6 +112,14 @@ export class WsClient {
         if (this.client.readyState !== this.client.OPEN) return;
         return this._sendMessage({
             type: RUN_MESSAGE_TYPE,
+            content: {}
+        });
+    }
+
+    resetExperiment = () => {
+        if (this.client.readyState !== this.client.OPEN) return;
+        return this._sendMessage({
+            type: RESET_MESSAGE_TYPE,
             content: {}
         });
     }

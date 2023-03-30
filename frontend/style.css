@@ -356,6 +356,8 @@ a.link:hover{
 
 #runContainer {
     margin: 20px 20px 20px 20px;
+    display: flex;
+    gap: 10px;
 }
 
 #measuringTape .title {    
@@ -438,6 +440,80 @@ button.no:hover {
     pointer-events: auto;
 }
 
-canvas, #inputOverlay, #chatOverlay, #changeRoomOverlay, #params, #run, #measuringTape {
+canvas, #inputOverlay, #chatOverlay, #changeRoomOverlay, #params, #run, #reset, #measuringTape {
     display: none;
 }
+
+#congratsOverlay{
+    display: none;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+#text-drop {
+    position: relative;
+    display: flex;
+    font-size:100px;
+    font-family: arial;
+    font-weight: 900;
+  }
+  
+  .s {
+    opacity:0;
+    animation: drop .4s linear forwards;
+    color: #9b5de5;
+  }
+  
+  .u {
+    opacity:0;
+    animation: drop .4s linear forwards .2s;
+    color: #f15bb5;
+  }
+  
+  .c {
+    opacity:0;
+    animation: drop .4s linear forwards .4s;
+    color: #fee440;
+  }
+  
+  .c2 {
+    opacity:0;
+    animation: drop .4s linear forwards .6s;
+    color: #00bbf9;
+  }
+  
+  .e {
+    opacity:0;
+    animation: drop .4s linear forwards .8s;
+    color: #00f5d4;
+  }
+  
+  .s2 {
+    opacity:0;
+    animation: drop .4s linear forwards 1.0s;
+    color: #e7b957;
+  }
+
+  .s3 {
+    opacity:0;
+    animation: drop .4s linear forwards 1.2s;
+    color: #3ff157;
+  }
+  @keyframes drop {
+    0% {transform: translateY(-200px) scaleY(0.9); opacity: 0;}
+    5% {opacity: .7;}
+    50% {transform: translateY(0px) scaleY(1); opacity: 1;}
+    65% {transform: translateY(-17px) scaleY(.9); opacity: 1;}
+    75% {transform: translateY(-22px) scaleY(.9); opacity: 1;}
+    100% {transform: translateY(0px) scaleY(1); opacity: 1;}
+  }
+  
+  .smile {
+    opacity:0;
+    animation: drop .4s linear forwards 1.5s;
+    color: #e55d5d;
+    font-size:90px;
+    margin-left:15px;
+  }

@@ -142,7 +142,7 @@ export const world = [
 
             static_objects: [
                 {
-                    position: [-105, 10, -130],
+                    position: [-105, 0, -130],
                     gltf: "data/assets/weapon_catapult.glb",     //TODO deploy
                     scaling: [50, 50, 50],
                     name: "parabolic",
@@ -236,14 +236,41 @@ export const world = [
                 this.params.alpha.value = params.alpha;
             },
 
+            isCorrect: function (){
+                const g = this.params.a.value;
+                const v0 = this.params.v0.value;
+                const alpha = this.params.alpha.value;
+
+                // y = y0 + v0 * sin(alpha) * tt + g * 1/2 * tt * tt
+                const a = g * 1/2;
+                const b =  v0 * Math.sin(alpha);
+                const c = this.dynamic_objects[0].position[1];
+
+                const r = b*b - 4 * a * c;
+                if (r < 0) return false;
+                
+                var tt = (-b + Math.sqrt(r)) / (2*a);
+                tt = (tt > 0) ? tt : (-b - Math.sqrt(r)) / (2*a);
+
+                if (tt < 0) return false;
+
+                // x = x0 + v0 * cos(alpha) * tt
+                const x = this.dynamic_objects[0].position[0] + v0 * Math.cos(alpha) * tt;
+
+                const dif = Math.abs( x - this.static_objects[1].position[0]);
+                if(dif > 5) return false
+                
+                return true;                
+            },
+
             dynamic_objects: [
                 {
-                    velocity: [-20, 30, 1],
-                    position: [-115, 30, -130],
+                    velocity: [-20, 30, 0],
+                    position: [-115, 20, -130],
                     running: false,
 
                     node: {
-                        position: [-115, 30, -130],
+                        position: [-115, 20, -130],
                         gltf: "data/assets/ball.glb",     //TODO deploy
                         scaling: [50, 50, 50],
                         name: "parabolic",
@@ -369,7 +396,11 @@ export const world = [
                 if ( diff < 5){     //todo check if 5 is the best offset
                     this.dynamic_objects[0].stop();
                     this.dynamic_objects[1].stop();
+                    //return this.isCorrect();
+
                 }
+                
+                //return false
             },
             
 
@@ -389,11 +420,40 @@ export const world = [
                 this.dynamic_objects.forEach((dynamic_object) => {
                     dynamic_object.reset(this.params);
                 })
+
+                console.log("reset")
             },
 
             setParams: function (params) {
                 this.params.a1.value = params.a1;
                 this.params.a2.value = params.a2;
+            },
+
+            isCorrect: function (){
+                const a1 = this.params.a1.value;
+                const a2 = this.params.a2.value;
+
+                /*
+                x1 = x0_1 + v0_1 * tt + 1/2 * a1 * tt * tt = x0_1  + 1/2 * a1 * tt * tt
+                x2 = x0_2 + v0_2 * tt + 1/2 * a2 * tt * tt = x0_2  + 1/2 * a2 * tt * tt
+                x1 = x2 
+                then x0_1  + 1/2 * a1 * tt * tt = x0_2  + 1/2 * a2 * tt * tt
+                tt * tt = (x0_2 - x0_1) / (1/2 * a1 - 1/2 * a2)
+                */
+                const x0_1 = this.dynamic_objects[0].position[0];
+                const x0_2 = this.dynamic_objects[1].position[0];
+
+                const tt2 = (x0_2 - x0_1) / (1/2 * a1 - 1/2 * a2);
+                if (tt2 < 0) return false;
+                
+                var tt = Math.sqrt(tt2);
+
+                const x = x0_1 + 1/2 * a1 * tt * tt;
+
+                const dif = Math.abs( x - this.static_objects[2].position[0]);
+                if(dif > 5) return false
+                
+                return true;                
             },
 
             dynamic_objects: [
@@ -565,7 +625,10 @@ export const world = [
             stop: function () {
                 if (this.dynamic_objects[0].node.position[1] < 1) {
                     this.dynamic_objects[0].stop();
+                    //return this.isCorrect();
                 }
+
+                //return false;
             },
             
 
@@ -592,6 +655,23 @@ export const world = [
                 this.params.v0.value = params.v0;
             },
 
+            isCorrect: function (){
+                const a = this.params.a.value;
+                const v0 = this.params.v0.value;
+
+                // v = v0 + a * tt
+                const tt = (-v0 / a); 
+                if (tt < 0) return false;
+
+                // y = y0 + v0 * tt + g * 1/2 * tt * tt
+                const y = v0 * tt + 1/2 * a * tt * tt;
+
+                const dif = Math.abs( y - this.static_objects[2].position[1]);
+                if(dif > 5) return false
+                
+                return true;                
+            },
+            
             dynamic_objects: [
                 {
                     velocity: [0,0,0],
