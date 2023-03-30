@@ -142,7 +142,7 @@ export const world = [
 
             static_objects: [
                 {
-                    position: [-105, 10, -130],
+                    position: [-105, 0, -130],
                     gltf: "data/assets/weapon_catapult.glb",     //TODO deploy
                     scaling: [50, 50, 50],
                     name: "parabolic",
@@ -208,6 +208,8 @@ export const world = [
             stop: function () {
                 if (this.dynamic_objects[0].node.position[1] < -1) {
                     this.dynamic_objects[0].stop();
+                    this.isCorrect();
+
                 }
             },
             
@@ -236,14 +238,41 @@ export const world = [
                 this.params.alpha.value = params.alpha;
             },
 
+            isCorrect: function (){
+                const g = this.params.a.value;
+                const v0 = this.params.v0.value;
+                const alpha = this.params.alpha.value;
+
+                // y = y0 + v0 * sin(alpha) * tt + g * 1/2 * tt * tt
+                const a = g * 1/2;
+                const b =  v0 * Math.sin(alpha);
+                const c = this.dynamic_objects[0].position[1];
+
+                const r = b*b - 4 * a * c;
+                if (r < 0) return false;
+                
+                var tt = (-b + Math.sqrt(r)) / (2*a);
+                tt = (tt > 0) ? tt : (-b - Math.sqrt(r)) / (2*a);
+
+                if (tt < 0) return false;
+
+                // x = x0 + v0 * cos(alpha) * tt
+                const x = this.dynamic_objects[0].position[0] + v0 * Math.cos(alpha) * tt;
+
+                const dif = Math.abs( x - this.static_objects[1].position[0]);
+                if(dif > 5) return false
+                
+                return true;                
+            },
+
             dynamic_objects: [
                 {
-                    velocity: [-20, 30, 1],
-                    position: [-115, 30, -130],
+                    velocity: [-20, 30, 0],
+                    position: [-115, 20, -130],
                     running: false,
 
                     node: {
-                        position: [-115, 30, -130],
+                        position: [-115, 20, -130],
                         gltf: "data/assets/ball.glb",     //TODO deploy
                         scaling: [50, 50, 50],
                         name: "parabolic",
