@@ -28,6 +28,8 @@ npm run dev
 - Whiteboards in the demo rooms with related equations, titles and relevant schemas/drawings
 - Very minimalistic world, leaving importance/focus to the actual physics/math at hand
 
+# showcase video
+[Showcase Video](https://youtu.be/_NtcIWW4SFE)
 
 ## Run MongoDB locally
 1. Install: https://learn.microsoft.com/en-us/windows/wsl/tutorials/wsl-database#install-mongodb (until step 8)
