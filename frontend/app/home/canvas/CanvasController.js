@@ -44,6 +44,8 @@ export class CanvasController {
         this._leaveRoomOverlayView.onYes = () => {
             if (!this.currentRoom) return;
 
+            this._isMeasuring = false;
+
             const exit = this.currentRoom.getExit(this.myUser.position);
             if (!exit) {  // should never happen
                 this._hasLeaveRoomDialogBeenDismissed = true;
